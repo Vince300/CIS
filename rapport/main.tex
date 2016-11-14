@@ -1,0 +1,45 @@
+\documentclass[12pt,a4paper]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[frenchb]{babel}
+\usepackage[hidelinks]{hyperref}
+\usepackage{graphicx}
+\usepackage[a4paper,left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm]{geometry}
+\usepackage[most]{tcolorbox}
+
+\newcommand{\grayIntensity}{25}
+\newcommand{\logoPath}{./images/logoEnsimag.png}
+\newcommand{\scaleLogo}{0.5}
+
+\begin{document}
+
+\begin{titlepage}
+	\centering
+	\begin{figure}[htp]
+		\includegraphics[scale=\scaleLogo]{\logoPath}
+	\end{figure}
+
+	\vspace{7.5cm}
+
+	{\huge\bfseries\colorbox{gray!\grayIntensity}{Projet CIS, Groupe 2}\par}
+
+	\vspace{7pt}
+
+	Aboubacar Salim, Assouline Daniel, Heinisch Pierre, Tavernier Vincent, Thiolliere Guillaume
+\end{titlepage}
+
+\tableofcontents
+
+\input{pol_secu_grille.tex}
+
+\input{pol_secu_site.tex}
+
+\input{doc_conception.tex}
+
+\input{doc_orga_equipe.tex}
+
+\input{doc_outils.tex}
+
+\input{doc_installation.tex}
+
+\end{document}
