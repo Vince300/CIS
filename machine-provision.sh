@@ -12,6 +12,9 @@ if [[ $EUID -ne 0 ]]; then
     exit 1
 fi
 
+# Remove debian cdrom entry
+sed -i 's/deb cdrom.*//' /etc/apt/sources.list
+
 # Update repositories
 apt-get update
 apt-get install -y sudo

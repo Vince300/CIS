@@ -15,7 +15,7 @@ apt-get purge "docker.io*"
 apt-get update
 
 # Configure repository
-apt-get install apt-transport-https ca-certificates
+apt-get install -y apt-transport-https ca-certificates
 apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
 echo "deb https://apt.dockerproject.org/repo debian-jessie main" >/etc/apt/sources.list.d/docker.list
 
@@ -23,7 +23,7 @@ echo "deb https://apt.dockerproject.org/repo debian-jessie main" >/etc/apt/sourc
 apt-get update
 
 # Install docker
-apt-get install docker-engine
+apt-get install -y docker-engine
 
 # Enable docker for non-root
 groupadd docker
