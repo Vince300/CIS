@@ -14,6 +14,7 @@ fi
 
 # Update repositories
 apt-get update
+apt-get install -y sudo
 
 # Create the admin user who can sudo
 useradd -m -s /bin/bash -G sudo admin
