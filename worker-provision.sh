@@ -37,6 +37,3 @@ passwd -l root
 
 # Ensure ssh root login is impossible through SSH
 echo "PermitRootLogin no\n" >>/etc/ssh/sshd_config
-
-# Delete install profile
-userdel -fr install

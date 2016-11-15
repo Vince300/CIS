@@ -2,3 +2,5 @@
 *.log
 *.out
 *.toc
+scripts/.xinitrc
+scripts/sftp-config.json
