@@ -1,9 +1,6 @@
 require 'sinatra'
 require 'tmpdir'
 
-set :bind, '0.0.0.0'
-set :port, 80
-
 post '/job/:id' do |id|
     # Abort on missing input file
     unless params.include? 'job' and params['job'].include? :tempfile 
@@ -11,7 +8,6 @@ post '/job/:id' do |id|
         break
     end
 
-    puts params['job'].inspect
     job_file = params['job'][:tempfile]
     
     tmpdir = Dir.mktmpdir
