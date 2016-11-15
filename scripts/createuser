@@ -1,0 +1,39 @@
+#!/usr/bin/env python
+
+import sys
+import subprocess
+
+def isValid(username):
+    if not username[0].islower():
+        return False
+    for c in username:
+        if not (c.islower() or c.isdigit()):
+            return False
+        return True
+
+if len(sys.argv) < 2:
+    print "Utilisation de la commande : ./createuser username"
+    exit(0)
+
+username = sys.argv[1]
+
+if not isValid(username):
+    print("Erreur : Minuscules et chiffres seulement")
+    exit(0)
+
+# Add shell user
+
+subprocess.call("sudo adduser " + username,shell=True)
+
+# Add the user to the group of limited privileges users (see /etc/security/limits.conf)
+subprocess.call("sudo gpasswd -a " + username + " limited",shell=True)
+
+# Set quotas for basic user
+block_softlimit = 1000000
+block_hardlimit = 1000000
+inode_softlimit = 1000
+inode_hardlimit = 1000
+subprocess.call("sudo setquota -u " + username + " " + "{} {} {} {}".format(block_softlimit,block_hardlimit,inode_softlimit,inode_hardlimit) +  " -a /" ,shell=True)
+
+# chmod the homefile 
+subprocess.call("sudo chmod og-rwx /home/" + username,shell=True)
