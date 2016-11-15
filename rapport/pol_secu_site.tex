@@ -2,31 +2,36 @@
 
 \chapter{Politique de sécurité du site}
 
-/// Développement ///
+\section{Développement}
 
-- Dépôt git confidentiel
+Dépôt git confidentiel
 
-/// Workers et Frontend ///
+\section{Workers et Frontend}
 
-- 1 Front-end, 2 workers
-- Physiquement inviolables
-- Workers innacessibles directement depuis Internet
-- Communication entre machines mutuellement authentifiées.
+\begin{itemize}
+\item[\textbullet] 1 Front-end, 2 workers
+\item[\textbullet] Physiquement inviolables
+\item[\textbullet] Workers innacessibles directement depuis Internet
+\item[\textbullet] Communication entre machines mutuellement authentifiées.
+\end{itemize}
 
+\section{Utilisateurs}
 
-/// Utilisateurs ///
-
-- Enregistrement avec vérification par email
-- Authentification (Par certificat) pour pourvoir utiliser les resources (SSO)
-- Utilisateurs prioritaires sur l'utilisation des ressources par rapport aux autres sites
-- Intégrité et confidentialité des données
-- Retour à l'utilisateur sur le bon déroulement ou non de l'exécution de ses jobs 
-- Resources pour un utilisateur limitées :
-	- Session front-end
-	- Nombre maximum de jobs lancés
-	- Nombre de jobs journaliers
-- Ressources journalières accordées au sites limitées
-- Nombre maximum de jobs simultanés accordés à un site
-- Les ressources destinées au traitement des requêtes venant d'autre sites sont limitées.
-- Blacklistage manuel nécessaire uniquement en cas de non respect des conditions d'utilisation
+\begin{itemize}
+\item[\textbullet] Enregistrement avec vérification par email
+\item[\textbullet] Authentification (Par certificat) pour pourvoir utiliser les resources (SSO)
+\item[\textbullet] Utilisateurs prioritaires sur l'utilisation des ressources par rapport aux autres sites
+\item[\textbullet] Intégrité et confidentialité des données
+\item[\textbullet] Retour à l'utilisateur sur le bon déroulement ou non de l'exécution de ses jobs 
+\item[\textbullet] Resources pour un utilisateur limitées :
+	\begin{itemize}
+		\item[-] Session front-end
+		\item[-] Nombre maximum de jobs lancés
+		\item[-] Nombre de jobs journaliers
+	\end{itemize}
+\item[\textbullet] Ressources journalières accordées au sites limitées
+\item[\textbullet] Nombre maximum de jobs simultanés accordés à un site
+\item[\textbullet] Les ressources destinées au traitement des requêtes venant d'autre sites sont limitées.
+\item[\textbullet]  Blacklistage manuel nécessaire uniquement en cas de non respect des conditions d'utilisation
+\end{itemize}
  
