@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import sys, os
 from bashrun import call
 from parseargs import parseargs
@@ -29,14 +31,17 @@ call("mkdir " + temp_tar)
 call("cp " + job_absolute_path + " " + temp_tar + "/" + job_name) 
 call("(cd " + temp_tar + "; tar zcf arch.tar.gz *)")
 
-request = requests.post(protocol + "://" + nginx_adress + ":" + str(port) + "/job/" + str(id_job), verify=cert_server_file, \
+request = requests.post(protocol + "://" + nginx_adress + ":" + str(port) + "/job/" + str(id_job), \
+		verify=False, \
 		cert=(cert_cert_file, cert_key_file), \
-		files={'file': ('arch.tar.gz', open(temp_tar+'/arch.tar.gz', 'rb'), 'multipart/form-data', {'Expires': '0'})}  )
+		files={'job': ('arch.tar.gz', open(temp_tar+'/arch.tar.gz', 'rb'), 'multipart/form-data', {'Expires': '0'})}  )
 
 time.sleep(2)
 call("rm -r " + temp_tar)
 
-if r.status_code == 200:
+print(request.status_code)
+print(request.text)
+if request.status_code == 200:
 	print("ok")
 	exit(0)
 else:
