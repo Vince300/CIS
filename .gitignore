@@ -6,3 +6,4 @@
 *.pdf
 scripts/.xinitrc
 scripts/sftp-config.json
+.nfs*

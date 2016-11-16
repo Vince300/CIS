@@ -25,13 +25,32 @@ Dépôt git confidentiel
 \item[\textbullet] Retour à l'utilisateur sur le bon déroulement ou non de l'exécution de ses jobs 
 \item[\textbullet] Resources pour un utilisateur limitées :
 	\begin{itemize}
-		\item[-] Session front-end
-		\item[-] Nombre maximum de jobs lancés
-		\item[-] Nombre de jobs journaliers
+	\item[-] Session front-end
+	\item[-] Nombre maximum de jobs lancés
+	\item[-] Nombre de jobs journaliers
 	\end{itemize}
-\item[\textbullet] Ressources journalières accordées au sites limitées
+\item[\textbullet] Ressources journalières accordées aux sites limitées
 \item[\textbullet] Nombre maximum de jobs simultanés accordés à un site
 \item[\textbullet] Les ressources destinées au traitement des requêtes venant d'autre sites sont limitées.
 \item[\textbullet]  Blacklistage manuel nécessaire uniquement en cas de non respect des conditions d'utilisation
 \end{itemize}
  
+\section{Valeurs limitantes}
+
+Dans cette section, nous allons présenter toutes les limites de l'utilisateur.
+
+% critère, valeur de la limite, qu'est-ce qu'on utilise pour cela
+
+\begin{center}
+	\begin{tabular}{| l | c | c |}
+		\hline
+		\rowcolor{lightgray} \multicolumn{1}{|c|}{Critère} & Valeur & Outil utilisé \\ \hline
+		Nombre maximum de jobs lancé par utilisateur & ? & ? \\ \hline
+		Nombre maximum de jobs journaliers par utilisateur & ? & ? \\ \hline
+		Ressources journalières accordées au site & ? & ? \\ \hline
+		Nombre maximum de jobs simultanés par site & ? & ? \\ \hline
+		Ressources destinées au traitement des requêtes des autres sites & ? & ? \\ \hline
+		Limitation des quotas d'un utilisateur (en Mo) & 1000 & ? \\ \hline
+		Limitation du nombre d'essais d'un job & 15 & ? \\ \hline
+	\end{tabular}
+\end{center}
