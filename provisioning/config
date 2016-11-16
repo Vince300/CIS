@@ -1,10 +1,11 @@
 Host cisfe
-    HostName ensipc376
+    HostName ensipc376.imag.fr
     IdentityFile ~/CIS/keys/id_cis_admin
     IdentityFile ~/CIS/keys/id_cis_grid
+    ForwardAgent yes
 
 Host cism1
-    ProxyCommand ssh -q %r@cisfe nc -q0 192.168.0.75 22
+    ProxyCommand ssh -A -q %r@cisfe nc -q0 192.168.0.75 22
 
 Host cism2
-    ProxyCommand ssh -q %r@cisfe nc -q0 192.168.0.77 22
+    ProxyCommand ssh -A -q %r@cisfe nc -q0 192.168.0.77 22
