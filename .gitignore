@@ -3,5 +3,6 @@
 *.out
 *.toc
 *.pyc
+*.pdf
 scripts/.xinitrc
 scripts/sftp-config.json
