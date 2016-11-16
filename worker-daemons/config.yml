@@ -1,0 +1,5 @@
+---
+max_file_size: 1048576
+max_workerd_connect_attempts: 5
+service_url: druby://localhost:7000
+frontend: 192.168.0.76
