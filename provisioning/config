@@ -1,0 +1,10 @@
+Host cisfe
+    HostName ensipc376
+    IdentityFile ~/CIS/keys/id_cis_admin
+    IdentityFile ~/CIS/keys/id_cis_grid
+
+Host cism1
+    ProxyCommand ssh -q %r@cisfe nc -q0 192.168.0.75 22
+
+Host cism2
+    ProxyCommand ssh -q %r@cisfe nc -q0 192.168.0.77 22

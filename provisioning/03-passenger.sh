@@ -7,6 +7,7 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 # Install RVM/ruby-2.3.1
+apt-get install -y curl
 gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
 \curl -sSL https://get.rvm.io | bash -s stable --ruby=2.3.1
 
@@ -35,22 +36,5 @@ usermod -a -G rvm grid
 # Delete default site
 rm -f /etc/nginx/sites-enabled/default
 
-# Create config for worker site
-echo "server {
-	root /srv/worker/public;
-	passenger_enabled on;
-	passenger_ruby /usr/local/rvm/rubies/ruby-2.3.1/bin/ruby;
-}" >/etc/nginx/sites-available/worker
-ln -s /etc/nginx/sites-available/worker /etc/nginx/sites-enabled/worker
-
-# Edit nginx config to run as grid user
-sed -i 's/user .*;/user grid;/'
-
-# Create server directory
-mkdir -p /srv/worker/public
-
-# Ownership to grid
-chown -R grid:grid /srv/worker
-
-# Restart nginx server
-service nginx restart
+# Reload config
+service nginx reload
