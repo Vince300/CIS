@@ -1,5 +1,16 @@
 # Scripts de provisioning
 
+## Général
+
+Le frontend agit en tant que passerelle pour les machines worker.
+
+Toutes les machines sont connectés via un hub à l'interface eth1 du gateway. Le réseau utilisé est
+192.168.0.0/24. L'interface eth0 du gateway est configurée automatiquement sur le réseau Ensimag
+pour l'accès depuis les autres sites.
+
+Les machines à l'intérieur du réseau ont accès à Internet pour la configuration et les mises à jour,
+mais les machines internes ne sont accessibles qu'en passant par le frontend.
+
 ## A exécuter sur les workers
 
 * Configurer l'interface réseau, reboot.
