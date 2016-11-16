@@ -3,6 +3,7 @@
 *.out
 *.toc
 *.pyc
+*.swp
 scripts/.xinitrc
 scripts/sftp-config.json
 .nfs*
