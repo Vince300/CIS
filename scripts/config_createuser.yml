@@ -1,6 +1,7 @@
-ca_crt_file: "/srv/cis2users.crt"
-ca_key_file: "/srv/cis2users.key"
+ca_crt_file: "/srv/cis2ca.pem"
+ca_key_file: "/srv/cis2ca.key"
 block_softlimit: 1000000
 block_hardlimit: 1000000
 inode_softlimit: 1000
 inode_hardlimit: 1000
+

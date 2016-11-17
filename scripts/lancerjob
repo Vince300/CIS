@@ -39,21 +39,18 @@ id_job = random.randint(1,2**30)
 
 call("mkdir " + temp_tar)
 call("cp " + job_absolute_path + " " + temp_tar + "/job") 
+if data_path:
+	data_absolute_path = os.path.abspath(data_path)
+	call("cp " + data_absolute_path + "/* " + temp_tar + "/")
 call("(cd " + temp_tar + "; tar zcf arch.tar.gz *)")
 
-request = requests.post(protocol + "://" + nginx_adress + ":" + str(port) + "/job/" + username+":"+str(id_job), \
-		verify=cert_server_file, \
+try:
+	request = requests.post(protocol + "://" + nginx_adress + ":" + str(port) + "/job/" + username+":"+str(id_job), \
+		verify=cert_server_file,\
 		cert=(cert_cert_file, cert_key_file), \
 		files={'job': ('arch.tar.gz', open(user_folder+"/"+temp_tar+'/arch.tar.gz', 'rb'), 'multipart/form-data', {'Expires': '0'})}  )
+finally:
+	call("rm -r " + temp_tar)
 
-time.sleep(2)
-call("rm -r " + temp_tar)
-
-print(request.status_code)
-print(request.text)
-if request.status_code == 200:
-	print("ok")
-	exit(0)
-else:
-	print("pas ok")
-	exit(-1)
+print("Code de retour : " + str(request.status_code))
+print("Message de retour : \n" + request.text)
