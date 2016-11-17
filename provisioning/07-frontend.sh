@@ -42,6 +42,8 @@ root       soft    nproc     unlimited" > /etc/security/limits.d/20-nproc.conf
 
 tar xf frontend_scripts
 
+mkdir /srv/certs
+
 cp lancerjob /usr/local/bin/lancerjob
 cp parseargs.py /usr/local/bin/parseargs.py
 cp bashcall.py /usr/local/bin/bashcall.py
@@ -50,3 +52,13 @@ cp config_lancerjob.yml /usr/local/bin/config_lancerjob.yml
 cp createuser /home/admin/createuser
 cp config_createuser.yml /usr/local/bin/config_createuser.yml
 cp deleteuser /home/admin/deleteuser
+
+cp localhost_frontend /etc/nginx/sites-available
+cp machine_frontend /etc/nginx/sites-available
+ln -s /etc/nginx/sites-available/localhost_frontend /etc/nginx/sites-enabled/localhost_frontend
+ln -s /etc/nginx/sites-available/machie_frontend /etc/nginx/sites-enabled/machine_frontend
+
+cp -r machine /srv/machine
+cp -r localhost /srv/localhost
+
+
