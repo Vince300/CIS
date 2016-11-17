@@ -28,7 +28,6 @@ wget http://pyyaml.org/download/pyyaml/PyYAML-3.12.tar.gz
 tar -xf PyYAML-3.12.tar.gz 
 cd PyYAML-3.12/
 sudo python setup.py install
->>>>>>> ajout des fichiers de configurations de lancerjob et de createuser
 
 # Add fork bomb protection
 
