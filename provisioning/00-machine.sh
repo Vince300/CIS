@@ -22,11 +22,15 @@ apt-get install -y sudo git curl wget
 # Install "install" as sudo
 gpasswd -a install sudo
 
+
 # Passwordless sudo, as the admin user has no password
 sed -i 's/%sudo\tALL=(ALL:ALL) ALL/%sudo\tALL=(ALL:ALL) NOPASSWD: ALL/' /etc/sudoers
 
 # Create the admin user who can sudo
 useradd -m -s /bin/bash -G sudo admin
+
+# Change access to admin directory
+chmod 700 ~admin
 
 # Setup the SSH key for admin
 mkdir ~admin/.ssh
@@ -35,6 +39,9 @@ chown -R admin:admin ~admin/.ssh
 
 # Create the grid user for workers
 useradd -m -s /bin/bash grid
+
+# Change access to grid directory
+chmod 700 ~grid
 
 # Setup the SSH key for worker
 mkdir ~grid/.ssh
