@@ -9,7 +9,7 @@ import requests
 import time
 import getpass
 
-cert_server_file = "/etc/nginx/cert/server_test.crt"
+cert_server_file = "/etc/nginx/cert/ca_test.crt"
 protocol = "https"
 nginx_adress = "localhost"
 port = "8081"
@@ -38,7 +38,7 @@ call("mkdir " + temp_tar)
 call("cp " + job_absolute_path + " " + temp_tar + "/job") 
 call("(cd " + temp_tar + "; tar zcf arch.tar.gz *)")
 
-request = requests.post(protocol + "://" + nginx_adress + ":" + str(port) + "/job/" + str(id_job), \
+request = requests.post(protocol + "://" + nginx_adress + ":" + str(port) + "/job/" + username+":"+str(id_job), \
 		verify=False, \
 		cert=(cert_cert_file, cert_key_file), \
 		files={'job': ('arch.tar.gz', open(user_folder+"/"+temp_tar+'/arch.tar.gz', 'rb'), 'multipart/form-data', {'Expires': '0'})}  )
