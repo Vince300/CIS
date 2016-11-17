@@ -6,9 +6,10 @@ After=docker.service
 Type=forking
 User=grid
 Group=grid
-ExecStart=/usr/local/rvm/bin/rvm default do ruby /srv/worker/workerd_control.rb start /srv/worker/config.yml
-ExecStop=/usr/local/rvm/bin/rvm default do ruby /srv/worker/workerd_control.rb stop /srv/worker/config.yml
+WorkingDirectory=/srv/worker
+ExecStart=/usr/local/rvm/bin/rvm default do ruby /srv/worker/workerd.rb /srv/worker/config.yml -d
 Restart=always
+StandardOutput=journal+console
 
 [Install]
 WantedBy=multi-user.target
