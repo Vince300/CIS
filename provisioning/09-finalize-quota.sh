@@ -13,7 +13,7 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 # Create quota files
-quotacheck  -cu /
+quotacheck  -fmcu /
 
 # Generate the table of current disk usage
-quota -avu
+quotacheck -mfavu
