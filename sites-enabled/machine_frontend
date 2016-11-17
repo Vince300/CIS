@@ -1,14 +1,14 @@
 server {
-	listen B:8082;
+	listen 192.168.0.76;
 	ssl on;
 	server_name localuserjob;
 
-	ssl_certificate /home/admin/worker-daemons/b.crt;
-	ssl_certificate_key /home/admin/worker-daemons/b.key;
-	ssl_client_certificate /home/admin/worker-daemons/ca.pem;
+	ssl_certificate /srv/machine.crt;
+	ssl_certificate_key /srv/machine.key;
+	ssl_client_certificate /srv/machines.pem;
 	ssl_verify_client on;
 
-	root /home/admin/machine_frontend/public;
+	root /srv/machine/public;
 	passenger_enabled on;
 	passenger_ruby /usr/local/rvm/wrappers/ruby-2.3.1/ruby;
 	

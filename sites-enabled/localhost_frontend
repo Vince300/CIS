@@ -1,15 +1,15 @@
 server {
 
-	listen localhost:8081;
+	listen localhost;
 	ssl on;
 	server_name localuserjob;
 
-	ssl_certificate /etc/nginx/cert/server_test.crt;
-	ssl_certificate_key /etc/nginx/cert/server_test.key;
-	ssl_client_certificate /etc/nginx/cert/ca_test.crt;
+	ssl_certificate /srv/local.crt;
+	ssl_certificate_key /srv/local.key;
+	ssl_client_certificate /srv/users.pem;
 	ssl_verify_client on;
 
-	root /home/admin/sinatra/public;
+	root /srv/localhost/public;
 	passenger_enabled on;
 	passenger_ruby /usr/local/rvm/wrappers/ruby-2.3.1/ruby;
 	
