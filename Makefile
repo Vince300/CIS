@@ -15,7 +15,7 @@ FRONTEND_SERVERS_OUTPUT=$(OUTPUT_FOLDER)/frontend_servers$(TAR_EXT)
 FRONTEND_SERVERS_FILES=$(wildcard frontend_servers/*) $(wildcard frontend_servers/localhost/*) \
 	$(wildcard frontend_servers/machine/*)
 
-ALL=$(WORKERD_OUTPUT) $(FRONTEND_SCRIPTS_FILES) $(FRONTEND_SERVERS_FILES)
+ALL=$(WORKERD_OUTPUT) $(FRONTEND_SCRIPTS_OUTPUT) $(FRONTEND_SERVERS_OUTPUT)
 
 all: $(ALL)
 
