@@ -26,15 +26,7 @@ iface eth0 inet static
     gateway 192.168.0.yyy
 ```
 
-* Configuration de bind
-
-```
-apt-get install bind9
-
-```
-
-* Transférer: *.sh, deploy/ensipcxxx.crt -> machine.crt, deploy/ensipcxxx.key -> machine.key
-en tant que l'utilisateur install via SFTP.
+* Transférer le dossier provisioning en tant que l'utilisateur install via SFTP.
 
 * En SSH en tant q'utilisateur install, passer root avec su puis exécuter:
 
@@ -43,9 +35,7 @@ en tant que l'utilisateur install via SFTP.
 ./01-docker.sh
 ./02-motd.sh
 ./03-passenger.sh
-mv machine.{crt,key} /srv/
-chown grid:grid /srv/*
-chmod 0400 /srv/*
+# Suivre les instructions de 04-install-keys-worker.txt
 ./06-workerd.sh
 ./80-hostfile-worker.sh
 ./99-finalize.sh
@@ -111,8 +101,7 @@ COMMIT
 net.ipv4.ip_forward=1
 ```
 
-* Transférer: *.sh, deploy/ensipcxxx.crt -> machine.crt, deploy/ensipcxxx.key -> machine.key
-en tant que l'utilisateur install via SFTP.
+* Transférer le dossier provisioning en tant que l'utilisateur install via SFTP.
 
 * En SSH en tant q'utilisateur install, passer root avec su puis exécuter:
 
@@ -121,13 +110,11 @@ en tant que l'utilisateur install via SFTP.
 ./02-motd.sh
 ./03-passenger.sh
 cat 04-install-keys.txt
-# mv machine.{crt,key} /srv/
-# chown grid:grid /srv/*
-# chmod 0400 /srv/*
+# Suivre les instructions de 04-install-keys-frontend.txt
 ./07-frontend.sh
-cat 08-quota.txt
+./08-quota.sh
+# reboot
 ./09-finalize-quota.sh
 ./81-hostfile-frontend.sh
 ./99-finalize.sh
 ```
-

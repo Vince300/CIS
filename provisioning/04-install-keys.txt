@@ -1,1 +1,0 @@
-Manually put certificates and keys in /srv.
