@@ -1,0 +1,2 @@
+Manually put machine.key, machine.crt, machine.pem and keys in /srv/.
+Must be owned by grid:grid and chmod 400.
