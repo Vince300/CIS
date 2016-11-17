@@ -15,7 +15,9 @@ FRONTEND_SERVERS_OUTPUT=$(OUTPUT_FOLDER)/frontend_servers$(TAR_EXT)
 FRONTEND_SERVERS_FILES=$(wildcard frontend_servers/*) $(wildcard frontend_servers/localhost/*) \
 	$(wildcard frontend_servers/machine/*)
 
-all: $(WORKERD_OUTPUT)
+ALL=$(WORKERD_OUTPUT) $(FRONTEND_SCRIPTS_FILES) $(FRONTEND_SERVERS_FILES)
+
+all: $(ALL)
 
 $(WORKERD_OUTPUT): $(WORKERD_NAMES:%=$(WORKERD_DIR)/%)
 	$(TARC) "$@" $^
@@ -23,7 +25,10 @@ $(WORKERD_OUTPUT): $(WORKERD_NAMES:%=$(WORKERD_DIR)/%)
 $(FRONTEND_SCRIPTS_OUTPUT): $(FRONTEND_SCRIPTS_FILES)
 	$(TARC) "$@" $^
 
+$(FRONTEND_SERVERS_OUTPUT): $(FRONTEND_SERVERS_FILES)
+	$(TARC) "$@" $^
+
 clean:
-	rm -f $(WORKERD_OUTPUT)
+	rm -f $(ALL)
 
 .PHONY: all clean
