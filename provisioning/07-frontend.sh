@@ -30,3 +30,7 @@ echo "# Default limit for number of user's processes to prevent
 admin      soft    nproc     unlimited
 grid       soft    nproc     unlimited
 root       soft    nproc     unlimited" > /etc/security/limits.d/20-nproc.conf
+
+
+tar xf frontend_scripts
+
