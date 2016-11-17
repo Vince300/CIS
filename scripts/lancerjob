@@ -10,7 +10,7 @@ import time
 import getpass
 import yaml
 
-conf = yaml.load(open(os.path.dirname(os.path.realpath(__file__)) + "config_lancerjob.yml"))
+conf = yaml.load(open("/usr/local/etc/config_lancerjob.yml"))
 
 cert_server_file = conf['cert_server_file']
 protocol = conf['protocol']
