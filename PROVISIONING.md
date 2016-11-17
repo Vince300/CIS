@@ -120,9 +120,10 @@ en tant que l'utilisateur install via SFTP.
 ./00-machine.sh
 ./02-motd.sh
 ./03-passenger.sh
-mv machine.{crt,key} /srv/
-chown grid:grid /srv/*
-chmod 0400 /srv/*
+cat 04-install-keys.txt
+# mv machine.{crt,key} /srv/
+# chown grid:grid /srv/*
+# chmod 0400 /srv/*
 ./07-frontend.sh
 cat 08-quota.txt
 ./09-finalize-quota.sh

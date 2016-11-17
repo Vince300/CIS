@@ -17,7 +17,7 @@ Local certificate key
     /srv/local.key
 
 Users CA
-    /srv/users.pem
+    /srv/cis2users.crt
 
 
 Site certificate

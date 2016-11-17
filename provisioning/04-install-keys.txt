@@ -1,1 +1,1 @@
-Manually put machine.crt and machine.key in /srv.
+Manually put certificates and keys in /srv.
