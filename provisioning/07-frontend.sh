@@ -47,13 +47,13 @@ mkdir /srv/certs
 cp lancerjob /usr/local/bin/lancerjob
 cp parseargs.py /usr/local/bin/parseargs.py
 cp bashcall.py /usr/local/bin/bashcall.py
-cp config_lancerjob.yml /usr/local/bin/config_lancerjob.yml
-chown root:root /usr/local/bin/config_lancerjob.yml
+cp config_lancerjob.yml /usr/local/etc/config_lancerjob.yml
+chown root:root /usr/local/etc/config_lancerjob.yml
 
 cp createuser /home/admin/createuser
-cp config_createuser.yml /usr/local/bin/config_createuser.yml
+cp config_createuser.yml /usr/local/etc/config_createuser.yml
 cp deleteuser /home/admin/deleteuser
-chown root:root /usr/local/bin/config_createuser.yml
+chown root:root /usr/local/etc/config_createuser.yml
 
 cp localhost_frontend /etc/nginx/sites-available
 cp machine_frontend /etc/nginx/sites-available
