@@ -22,10 +22,9 @@ admin      soft    nproc     unlimited
 grid       soft    nproc     unlimited
 root       soft    nproc     unlimited" > /etc/security/limits.d/20-nproc.conf
 
-# Set ACL so that grid can write result in user's home
-setfacl -m user:grid:rwx /home
-
 # Set quota for / partition
-sed -i 's/\(UUID\=.*\/.*ext4.*errors=remount-ro\)/\1,usrquota/'
+echo "Add usrquota to / in /etc/fstab then restart the machine and and launch 09-limits-end.sh.
+It should look like this:
+"
 
-echo "Please verify that usrquota has been set for / in /etc/fstab then restart the machine and and launch frontend-provision-end.sh"
+sed 's/\(UUID\=.*\/.*ext4.*errors=remount-ro\)/\1,usrquota/' /etc/fstab

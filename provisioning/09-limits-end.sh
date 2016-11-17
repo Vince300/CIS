@@ -17,4 +17,3 @@ quotacheck  -cu /
 
 # Generate the table of current disk usage
 quota -avu
-
