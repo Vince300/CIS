@@ -7,15 +7,22 @@ import random
 import string
 import requests
 import time
+import getpass
 
-cert_cert_file = "/home/grid/client_test.crt"
-cert_key_file = "/home/grid/client_test.key"
 cert_server_file = "/etc/nginx/cert/server_test.crt"
 protocol = "https"
 nginx_adress = "localhost"
 port = "8081"
 
+username = getpass.getuser()
+user_folder = "/home/"+username 
+cert_cert_file = "/srv/certs/"+username+"/client.crt"
+cert_key_file = "/srv/certs/"+username+"/client.key"
+
 args = parseargs(sys.argv)
+if not 'job' in args:
+    print("Usage : lancerjob --job job_name")
+    exit(-1)
 
 job_path = args['job']
 job_absolute_path = os.path.abspath(job_path)
@@ -28,13 +35,13 @@ temp_tar = randomword(50)
 id_job = random.randint(1,2**30)
 
 call("mkdir " + temp_tar)
-call("cp " + job_absolute_path + " " + temp_tar + "/" + job_name) 
+call("cp " + job_absolute_path + " " + temp_tar + "/job") 
 call("(cd " + temp_tar + "; tar zcf arch.tar.gz *)")
 
 request = requests.post(protocol + "://" + nginx_adress + ":" + str(port) + "/job/" + str(id_job), \
 		verify=False, \
 		cert=(cert_cert_file, cert_key_file), \
-		files={'job': ('arch.tar.gz', open(temp_tar+'/arch.tar.gz', 'rb'), 'multipart/form-data', {'Expires': '0'})}  )
+		files={'job': ('arch.tar.gz', open(user_folder+"/"+temp_tar+'/arch.tar.gz', 'rb'), 'multipart/form-data', {'Expires': '0'})}  )
 
 time.sleep(2)
 call("rm -r " + temp_tar)
