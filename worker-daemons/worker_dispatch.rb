@@ -25,6 +25,9 @@ class WorkerDispatch
 
         # Start listening for container events
         docker_listen_events
+
+        # Start the killer thread
+        docker_run_watchdog
     end
 
     def schedule_job(job_file, job_id, job_local = nil)
@@ -88,7 +91,11 @@ class WorkerDispatch
                     if event == 'die'
                         job = @mtx.synchronize {
                             j = @managed_containers[id]
-                            @pending_die_events << id unless j
+                            if j
+                                @managed_containers.delete id
+                            else
+                                @pending_die_events << id
+                            end
                             j
                         }
 
@@ -129,7 +136,7 @@ class WorkerDispatch
     def send_result(result_archive, job_id)
         begin
             url = config['frontend'] + "/result/" + job_id
-            logger.info("POST #{result_archive} as #{job_id}")
+            logger.info("POST #{result_archive} as #{url}")
             RestClient::Resource.new(
                 url,
                 :ssl_client_cert  =>  @client_certificate,
@@ -144,8 +151,6 @@ class WorkerDispatch
 
     def on_container_die(job_spec)
         container_id = job_spec[:container_id]
-        @managed_containers.delete container_id
-
         job_id = job_spec[:job_id]
         job_dir = job_spec[:job_dir]
         tmp_dir = File.expand_path('..', job_dir)
@@ -173,13 +178,13 @@ class WorkerDispatch
             # ensure limit on archive size
             if (sz = File.size(result_archive_path)) > config['max_result_size']
                 # change job.log
-                File.open(result_job_log, "a") do |jl|
+                File.open(result_job_log, "w") do |jl|
                     jl.puts "resulting archive was #{sz} bytes, too big"
                 end
 
                 # retar, job logs only
                 FileUtils.rm(result_archive_path)
-                unless system("tar", "-C", tmp_dir, "-czf", result_archive_path, "job.log", "output.log")
+                unless system("tar", "-C", tmp_dir, "-czf", result_archive_path, "job.log")
                     fail "could not prepare result archive"
                 end
             end
@@ -274,4 +279,11 @@ class WorkerDispatch
         end
     end
 
+    def docker_run_watchdog
+        Thread.start do
+            loop do
+                sleep(1)
+            end
+        end
+    end
 end
