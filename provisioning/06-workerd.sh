@@ -10,17 +10,17 @@ fi
 /usr/local/rvm/bin/rvm default do gem install daemons
 
 # Edit nginx config to run as grid user
-sed -i 's/user .*;/user grid;/'
+sed -i 's/user .*;/user grid;/' /etc/nginx/nginx.conf
 
 # Extract the archive to /srv/worker
 mkdir -p /srv/worker/public
-tar -C /srv/worker -xf workerd.tar.gz
+tar -C /srv/worker --strip-components 1 -xf workerd.tar.gz
 
 # Move the config file to nginx config dir
 mv /srv/worker/worker /etc/nginx/sites-available
 
 # Enable it
-ln -s /etc/nginx/sites-available/worker /etc/nginx/sites-enabled
+ln -fs /etc/nginx/sites-available/worker /etc/nginx/sites-enabled
 
 # Prepare the systemd service
 mv /srv/worker/cisd.service /etc/systemd/system
