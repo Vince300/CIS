@@ -84,8 +84,8 @@ ln -fs /etc/nginx/sites-available/machie_frontend /etc/nginx/sites-enabled
 mkdir -p /srv/machine/public
 mkdir -p /srv/localhost/public
 
-cp -r machine /srv/machine
-cp -r localhost /srv/localhost
+cp -r machine /srv
+cp -r localhost /srv
 
 chown grid:grid -R /srv/machine
 chown grid:grid -R /srv/localhost
