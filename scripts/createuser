@@ -4,7 +4,7 @@ import sys
 import subprocess
 import yaml
 
-conf = yaml.load(open(os.path.dirname(os.path.realpath(__file__)) + "/config_createuser.yml"))
+conf = yaml.load(open("/usr/local/etc/config_createuser.yml"))
 
 ca_crt_file = conf['ca_crt_file']
 ca_key_file = conf['ca_key_file']

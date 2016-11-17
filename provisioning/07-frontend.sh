@@ -40,27 +40,52 @@ admin      soft    nproc     unlimited
 grid       soft    nproc     unlimited
 root       soft    nproc     unlimited" > /etc/security/limits.d/20-nproc.conf
 
-tar xf frontend_scripts
+# Restore wd
+cd
+
+# scripts provisioning
+tar xf frontend_scripts.tar.gz
+cd scripts
 
 mkdir /srv/certs
+chown admin:admin /srv/certs
 
 cp lancerjob /usr/local/bin/lancerjob
+chmod 750 /usr/local/bin/lancerjob
+
 cp parseargs.py /usr/local/bin/parseargs.py
 cp bashcall.py /usr/local/bin/bashcall.py
-cp config_lancerjob.yml /usr/local/bin/config_lancerjob.yml
-chown root:root /usr/local/bin/config_lancerjob.yml
+chmod 640 /usr/local/bin/parseargs.py /usr/local/bin/bashcall.py
+
+cp config_lancerjob.yml /usr/local/etc/config_lancerjob.yml
+chmod 640 /usr/local/etc/config_lancerjob.yml
+chown root:admin /usr/local/etc/config_lancerjob.yml
 
 cp createuser /home/admin/createuser
-cp config_createuser.yml /usr/local/bin/config_createuser.yml
+chmod 750 /home/admin/createuser
+cp config_createuser.yml /usr/local/etc/config_createuser.yml
+chmod 640 /usr/local/etc/config_createuser.yml
 cp deleteuser /home/admin/deleteuser
-chown root:root /usr/local/bin/config_createuser.yml
+chmod 750 /home/admin/deleteuser
+chown root:admin /usr/local/etc/config_createuser.yml /home/admin/deleteuser /home/admin/createuser
+
+# Restore wd
+cd
+
+# Extract files
+tar xf frontend_servers.tar.gz
+cd frontend_servers
 
 cp localhost_frontend /etc/nginx/sites-available
 cp machine_frontend /etc/nginx/sites-available
-ln -s /etc/nginx/sites-available/localhost_frontend /etc/nginx/sites-enabled/localhost_frontend
-ln -s /etc/nginx/sites-available/machie_frontend /etc/nginx/sites-enabled/machine_frontend
+ln -fs /etc/nginx/sites-available/localhost_frontend /etc/nginx/sites-enabled
+ln -fs /etc/nginx/sites-available/machie_frontend /etc/nginx/sites-enabled
+
+mkdir -p /srv/machine/public
+mkdir -p /srv/localhost/public
 
 cp -r machine /srv/machine
 cp -r localhost /srv/localhost
 
-
+chown grid:grid -R /srv/machine
+chown grid:grid -R /srv/localhost
