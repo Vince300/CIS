@@ -13,4 +13,4 @@ max_duration: 300 #5min
 limits:
     memory: 128m
     memory-swap: 256m
-    cpu-quota: 10000
+    cpuset-cpus: 1-3
