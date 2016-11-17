@@ -1,0 +1,6 @@
+Manually set usrquota for / partition in /etc/fstab
+
+The result may look like this
+`$ sed 's/\(UUID\=.*\/.*ext4.*errors=remount-ro\)/\1,usrquota/' /etc/fstab`
+
+And then reboot the machine

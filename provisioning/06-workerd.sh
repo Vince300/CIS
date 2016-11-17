@@ -9,22 +9,27 @@ fi
 # We need the daemons gem
 /usr/local/rvm/bin/rvm default do gem install daemons
 
-# Create config for worker site
-echo "server {
-	root /srv/worker/public;
-	passenger_enabled on;
-	passenger_ruby /usr/local/rvm/rubies/ruby-2.3.1/bin/ruby;
-}" >/etc/nginx/sites-available/worker
-ln -s /etc/nginx/sites-available/worker /etc/nginx/sites-enabled/worker
-
 # Edit nginx config to run as grid user
-sed -i 's/user .*;/user grid;/'
+sed -i 's/user .*;/user grid;/' /etc/nginx/nginx.conf
 
-# Create server directory
+# Extract the archive to /srv/worker
 mkdir -p /srv/worker/public
+tar -C /srv/worker --strip-components 1 -xf workerd.tar.gz
+
+# Move the config file to nginx config dir
+mv /srv/worker/worker /etc/nginx/sites-available
+
+# Enable it
+ln -fs /etc/nginx/sites-available/worker /etc/nginx/sites-enabled
+
+# Prepare the systemd service
+mv /srv/worker/cisd.service /etc/systemd/system
+systemctl daemon-reload
+systemctl start cisd.service
+systemctl enable cisd.service
 
 # Ownership to grid
 chown -R grid:grid /srv/worker
 
 # Restart nginx server
-service nginx restart
+service nginx reload

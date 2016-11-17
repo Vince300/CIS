@@ -2,9 +2,12 @@
 
 import sys
 import subprocess
+import yaml
 
-ca_crt_file = "/etc/nginx/cert/ca_test.crt"
-ca_key_file = "/etc/nginx/cert/ca_test.key"
+conf = yaml.load(open(os.path.dirname(os.path.realpath(__file__)) + "/config_createuser.yml"))
+
+ca_crt_file = conf['ca_crt_file']
+ca_key_file = conf['ca_key_file']
 
 def call(command):
     subprocess.call(command, shell=True)
@@ -35,10 +38,10 @@ subprocess.call("sudo adduser " + username,shell=True)
 subprocess.call("sudo gpasswd -a " + username + " limited",shell=True)
 
 # Set quotas for basic user
-block_softlimit = 1000000
-block_hardlimit = 1000000
-inode_softlimit = 1000
-inode_hardlimit = 1000
+block_softlimit = conf['block_softlimit']
+block_hardlimit = conf['block_hardlimit']
+inode_softlimit = conf['inode_softlimit']
+inode_hardlimit = conf['inode_hardlimit']
 subprocess.call("sudo setquota -u " + username + " " + "{} {} {} {}".format(block_softlimit,block_hardlimit,inode_softlimit,inode_hardlimit) +  " -a /" ,shell=True)
 
 # chmod the homefile 
