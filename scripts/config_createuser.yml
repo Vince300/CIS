@@ -1,0 +1,6 @@
+ca_crt_file: "/etc/nginx/cert/ca_test.crt"
+ca_key_file: "/etc/nginx/cert/ca_test.key"
+block_softlimit: 1000000
+block_hardlimit: 1000000
+inode_softlimit: 1000
+inode_hardlimit: 1000

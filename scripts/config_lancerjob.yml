@@ -1,0 +1,4 @@
+cert_server_file: "/etc/nginx/cert/server_test.crt"
+protocol: "https"
+nginx_adress: "localhost"
+port: 8081

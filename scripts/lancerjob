@@ -8,11 +8,14 @@ import string
 import requests
 import time
 import getpass
+import yaml
 
-cert_server_file = "/etc/nginx/cert/ca_test.crt"
-protocol = "https"
-nginx_adress = "localhost"
-port = "8081"
+conf = yaml.load(open(os.path.dirname(os.path.realpath(__file__)) + "config_lancerjob.yml"))
+
+cert_server_file = conf['cert_server_file']
+protocol = conf['protocol']
+nginx_adress = conf['nginx_adress']
+port = conf['port']
 
 username = getpass.getuser()
 user_folder = "/home/"+username 
