@@ -282,9 +282,75 @@ class WorkerDispatch
         end
     end
 
+    def kill_container(job_spec)
+        container_id = job_spec[:container_id]
+        job_id = job_spec[:job_id]
+
+        logger.warn("job #{job_id} timed out, killing container")
+
+        # Kill the container
+        system("docker", "stop", "-t", 0, container_id)
+
+        tmp_dir = File.expand_path('..', job_spec[:job_dir])
+
+        result_archive_path = File.join(tmp_dir, 'result.tar.gz')
+        result_job_log = File.join(tmp_dir, 'job.log')
+
+        begin
+            # Print job.log
+            File.open(result_job_log, "w") do |jl|
+                jl.puts "script timed out after #{DateTime.now - job_spec[:started_at]} seconds"
+            end
+
+            unless system("tar", "-C", tmp_dir, "-czf", result_archive_path, "job.log")
+                fail "could not prepare result archive"
+            end
+
+            logger.info("resulting archive #{result_archive_path} for #{job_id} is #{File.size(result_archive_path)} bytes")
+
+            if job_spec[:job_local]
+                logger.info("local job result sent to #{job_spec[:job_local]}")
+                FileUtils.mv(result_archive_path, job_spec[:job_local])
+            else
+                send_result(result_archive_path, job_id)
+            end
+        rescue StandardError => e
+            logger.error(e)
+        ensure
+            # ensure cleanup
+            logger.info("cleaning #{tmp_dir}")
+            FileUtils.rmtree(tmp_dir)
+        end
+
+        # Ensure we won't try to reprocess that job
+        @pending_die_events.delete job_spec[:container_id]
+    end
+
     def docker_run_watchdog
         Thread.start do
             loop do
+                timedout_containers = []
+                now = DateTime.now
+
+                # Atomic remove timedout containers
+                @mtx.synchronize do
+                    @managed_containers.each do |container_id, job_spec|
+                        if now - job_spec[:started_at] > config['max_duration']
+                            timedout_containers << job_spec
+                        end
+                    end
+
+                    timedout_containers.each do |job_spec|
+                        @managed_containers.delete job_spec[:container_id]
+                    end
+                end
+
+                # Process timedout containers
+                timedout_containers.each do |job_spec|
+                    Thread.start(job_spec, &:kill_container)
+                end
+
+                # Wait until the next second to check
                 sleep(1)
             end
         end
