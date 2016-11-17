@@ -9,6 +9,9 @@ if [[ $EUID -ne 0 ]]; then
     exit 1
 fi
 
+# Just in case
+service docker stop
+
 # See docker install procedure
 apt-get purge "lxc-docker*"
 apt-get purge "docker.io*"
@@ -30,6 +33,10 @@ gpasswd -a grid docker
 
 # Change settings : max 1G
 sed -i 's/ExecStart=.*/ExecStart=\/usr\/bin\/dockerd -H fd:\/\/ --storage-driver=devicemapper --storage-opt dm.basesize=1G/' /lib/systemd/system/docker.service
+
+# Fix the kernel for next boot install
+sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT=.*/GRUB_CMDLINE_LINUX_DEFAULT="quiet cgroup_enable=memory swapaccount=1"/' /etc/default/grub
+update-grub
 
 # Enable service
 update-rc.d docker enable
