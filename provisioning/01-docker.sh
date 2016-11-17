@@ -26,8 +26,10 @@ apt-get update
 apt-get install -y docker-engine
 
 # Enable docker for non-root
-groupadd docker
 gpasswd -a grid docker
+
+# Change settings : max 1G
+sed -i 's/ExecStart=.*/ExecStart=\/usr\/bin\/dockerd -H fd:\/\/ --storage-driver=devicemapper --storage-opt dm.basesize=1G/' /lib/systemd/system/docker.service
 
 # Enable service
 update-rc.d docker enable

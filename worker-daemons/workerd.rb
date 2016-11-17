@@ -8,6 +8,6 @@ config = YAML.load_file(File.expand_path('../config.yml', __FILE__))
 logger = Logger.new(STDOUT)
 wd = WorkerDispatch.new(logger, config)
 
-DRb.start_service(config['service_url'])
+DRb.start_service(config['service_url'], wd)
 logger.info("cis workerd running on #{DRb.uri}")
 DRb.thread.join
