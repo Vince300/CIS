@@ -51,7 +51,7 @@ mkdir -p /srv/certs
 chown admin:admin /srv/certs
 
 cp lancerjob /usr/local/bin/lancerjob
-chmod 750 /usr/local/bin/lancerjob
+chmod 755 /usr/local/bin/lancerjob
 chown root:admin /usr/local/bin/lancerjob
 
 cp parseargs.py /usr/local/bin/parseargs.py
@@ -60,7 +60,7 @@ chmod 644 /usr/local/bin/parseargs.py /usr/local/bin/bashrun.py
 chown root:admin /usr/local/bin/parseargs.py /usr/local/bin/bashrun.py
 
 cp config_lancerjob.yml /usr/local/etc/config_lancerjob.yml
-chmod 640 /usr/local/etc/config_lancerjob.yml
+chmod 644 /usr/local/etc/config_lancerjob.yml
 chown root:admin /usr/local/etc/config_lancerjob.yml
 
 cp createuser /usr/local/bin/createuser
