@@ -31,7 +31,7 @@ post '/job/:id' do |id|
             @workerd = DRbObject.new_with_uri(config['service_url'])
         end
         
-        halt @workerd.schedule_job(job_file.path)
+        halt @workerd.schedule_job(job_file.path, id)
     rescue DRb::DRbConnError
         # One more try
         attempt = attempt + 1
