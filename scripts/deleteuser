@@ -26,3 +26,4 @@ subprocess.call("sudo userdel " + username,shell=True)
 
 # Remove it's home
 subprocess.call("sudo rm -rf /home/" + username ,shell=True)
+subprocess.call("sudo rm -rf /srv/certs/" + username ,shell=True)

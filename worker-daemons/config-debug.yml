@@ -3,10 +3,10 @@ max_file_size: 10485760
 max_result_size: 10485760
 max_workerd_connect_attempts: 5
 service_url: druby://localhost:7000
-client_certificate: /srv/machine.crt
-client_key: /srv/machine.key
-ca_file: /srv/machines.pem
-frontend: https://ensipc376
+client_certificate: a.crt
+client_key: a.key
+ca_file: ca.pem
+frontend: https://B:8082
 docker_image: debian:jessie-slim
 tmp_prefix: cis_workerd
 max_duration: 300 #5min

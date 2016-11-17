@@ -3,6 +3,12 @@
 import sys
 import subprocess
 
+ca_crt_file = "/etc/nginx/cert/ca_test.crt"
+ca_key_file = "/etc/nginx/cert/ca_test.key"
+
+def call(command):
+    subprocess.call(command, shell=True)
+
 def isValid(username):
     if not username[0].islower():
         return False
@@ -37,3 +43,13 @@ subprocess.call("sudo setquota -u " + username + " " + "{} {} {} {}".format(bloc
 
 # chmod the homefile 
 subprocess.call("sudo chmod og-rwx /home/" + username,shell=True)
+
+# Create certificates used to POST to localhost
+call("mkdir /srv/certs/"+username)
+folder = "/srv/certs/"+username
+call("sudo openssl genrsa -out "+folder+"/client.key 2048")
+call('sudo openssl req -new -key '+folder+'/client.key -out '+folder+'/client.csr -subj "/CN='+username+'"')
+call("sudo openssl x509 -req -in "+folder+"/client.csr -CA " + ca_crt_file + " -CAkey " + ca_key_file + " -out "+folder+"/client.crt -days 365 -sha256")
+call("sudo chmod 500 "+folder)
+call("sudo chown "+username+":"+username + " " + folder)
+
