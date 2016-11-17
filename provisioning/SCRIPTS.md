@@ -123,9 +123,8 @@ mv machine.{crt,key} /srv/
 chown grid:grid /srv/*
 chmod 0400 /srv/*
 ./07-frontend.sh
-./08-limits.sh
-# reboot the machine
-./09-limits-end.sh
+cat 08-quota.txt
+./09-finalize-quota.sh
 ./99-finalize.sh
 ```
 

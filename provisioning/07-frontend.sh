@@ -19,3 +19,14 @@ cd requests
 python setup.py install
 cd ../
 rm -rf requests
+
+# Add fork bomb protection
+
+echo "# Default limit for number of user's processes to prevent
+# accidental fork bombs.
+# See rhbz #432903 for reasoning.
+
+*          soft    nproc     4096
+admin      soft    nproc     unlimited
+grid       soft    nproc     unlimited
+root       soft    nproc     unlimited" > /etc/security/limits.d/20-nproc.conf
