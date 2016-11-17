@@ -1,0 +1,45 @@
+#!/usr/bin/env ruby
+require 'open3'
+require 'logger'
+require 'yaml'
+
+config_file = File.expand_path('../control.yml', __FILE__)
+config = YAML.load_file(config_file)
+key_file = File.expand_path(File.join('..', config['admin_key']), config_file)
+
+unless ARGV.length >= 2
+    puts "Usage: ./control [env|all] [action]"
+    exit 1
+end
+
+envs = ARGV.shift
+action = ARGV.shift
+envs = config.keys.to_a if envs == 'all'
+envs = [envs] unless envs.is_a? Array
+
+logger = Logger.new(STDOUT)
+envs.each do |env|
+    next unless config[env].is_a? Hash
+    # next unless .is_a? Hash
+    logger.info("[#{env}] begin")
+
+    config[env]['hosts'].each do |host|
+        if action == 'restart-services'
+            if services = config[env]['services']
+                logger.info("[#{env}] reloading systemd and restarting #{services.join(',')}")
+                cmd = "ssh -i #{key_file} admin@#{host} 'sudo bash -s'"
+                logger.debug(cmd)
+                Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
+                    stdin.puts("systemctl daemon-reload")
+                    services.each do |service|
+                        stdin.puts("systemctl restart #{service}")
+                    end
+                end
+            end
+        else
+            logger.info("[#{env}] unknown action #{action}")
+        end
+    end
+
+    logger.info("[#{env}] end")
+end

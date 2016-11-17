@@ -42,7 +42,7 @@ call("cp " + job_absolute_path + " " + temp_tar + "/job")
 call("(cd " + temp_tar + "; tar zcf arch.tar.gz *)")
 
 request = requests.post(protocol + "://" + nginx_adress + ":" + str(port) + "/job/" + username+":"+str(id_job), \
-		verify=False, \
+		verify=cert_server_file, \
 		cert=(cert_cert_file, cert_key_file), \
 		files={'job': ('arch.tar.gz', open(user_folder+"/"+temp_tar+'/arch.tar.gz', 'rb'), 'multipart/form-data', {'Expires': '0'})}  )
 
