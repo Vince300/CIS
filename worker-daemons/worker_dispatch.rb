@@ -155,6 +155,7 @@ class WorkerDispatch
         job_dir = job_spec[:job_dir]
         tmp_dir = File.expand_path('..', job_dir)
 
+        results_dir = File.join(tmp_dir, 'results')
         result_archive_path = File.join(tmp_dir, 'result.tar.gz')
         result_job_log = File.join(tmp_dir, 'job.log')
         result_output_log = File.join(tmp_dir, 'output.log') 
@@ -166,11 +167,13 @@ class WorkerDispatch
             # Pull result files
             docker_cp(container_id, job_spec[:job_log], result_job_log)
             docker_cp(container_id, job_spec[:output_log], result_output_log)
+            Dir.mkdir(results_dir)
+            docker_cp(container_id, '/root/results', tmp_dir)
 
             # Tar the files
             logger.info("preparing the result archive")
             
-            unless system("tar", "-C", tmp_dir, "-czf", result_archive_path, "job.log", "output.log")
+            unless system("tar", "-C", tmp_dir, "-czf", result_archive_path, "job.log", "output.log", results_dir)
                 # failed to prepare the archive, this is fatal
                 fail "could not prepare result archive"
             end
