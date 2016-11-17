@@ -1,16 +1,14 @@
 server {
+	listen localhost:443;
 
-	listen localhost;
 	ssl on;
-	server_name localuserjob;
 
 	ssl_certificate /srv/local.crt;
 	ssl_certificate_key /srv/local.key;
-	ssl_client_certificate /srv/users.pem;
+	ssl_client_certificate /srv/cis2users.crt;
 	ssl_verify_client on;
 
 	root /srv/localhost/public;
 	passenger_enabled on;
 	passenger_ruby /usr/local/rvm/wrappers/ruby-2.3.1/ruby;
-	
 }

@@ -21,7 +21,7 @@ cd ../
 rm -rf requests
 
 # Install python dev
-apt-get install python-dev
+apt-get install -y python-dev
 
 # Install python yaml parser
 wget http://pyyaml.org/download/pyyaml/PyYAML-3.12.tar.gz
@@ -41,36 +41,38 @@ grid       soft    nproc     unlimited
 root       soft    nproc     unlimited" > /etc/security/limits.d/20-nproc.conf
 
 # Restore wd
-cd
+cd ..
 
 # scripts provisioning
 tar xf frontend_scripts.tar.gz
 cd scripts
 
-mkdir /srv/certs
+mkdir -p /srv/certs
 chown admin:admin /srv/certs
 
 cp lancerjob /usr/local/bin/lancerjob
 chmod 750 /usr/local/bin/lancerjob
+chown root:admin /usr/local/bin/lancerjob
 
 cp parseargs.py /usr/local/bin/parseargs.py
-cp bashcall.py /usr/local/bin/bashcall.py
-chmod 640 /usr/local/bin/parseargs.py /usr/local/bin/bashcall.py
+cp bashrun.py /usr/local/bin/bashrun.py
+chmod 644 /usr/local/bin/parseargs.py /usr/local/bin/bashrun.py
+chown root:admin /usr/local/bin/parseargs.py /usr/local/bin/bashrun.py
 
 cp config_lancerjob.yml /usr/local/etc/config_lancerjob.yml
 chmod 640 /usr/local/etc/config_lancerjob.yml
 chown root:admin /usr/local/etc/config_lancerjob.yml
 
-cp createuser /home/admin/createuser
-chmod 750 /home/admin/createuser
+cp createuser /usr/local/bin/createuser
+chmod 750 /usr/local/bin/createuser
 cp config_createuser.yml /usr/local/etc/config_createuser.yml
 chmod 640 /usr/local/etc/config_createuser.yml
-cp deleteuser /home/admin/deleteuser
-chmod 750 /home/admin/deleteuser
-chown root:admin /usr/local/etc/config_createuser.yml /home/admin/deleteuser /home/admin/createuser
+cp deleteuser /usr/local/bin/deleteuser
+chmod 750 /usr/local/bin/deleteuser
+chown root:admin /usr/local/etc/config_createuser.yml /usr/local/bin/deleteuser /usr/local/bin/createuser
 
 # Restore wd
-cd
+cd ..
 
 # Extract files
 tar xf frontend_servers.tar.gz
@@ -79,7 +81,7 @@ cd frontend_servers
 cp localhost_frontend /etc/nginx/sites-available
 cp machine_frontend /etc/nginx/sites-available
 ln -fs /etc/nginx/sites-available/localhost_frontend /etc/nginx/sites-enabled
-ln -fs /etc/nginx/sites-available/machie_frontend /etc/nginx/sites-enabled
+ln -fs /etc/nginx/sites-available/machine_frontend /etc/nginx/sites-enabled
 
 mkdir -p /srv/machine/public
 mkdir -p /srv/localhost/public

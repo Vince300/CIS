@@ -1,4 +1,4 @@
-cert_server_file: "/etc/nginx/cert/server_test.crt"
+cert_server_file: "/srv/cis2users.crt"
 protocol: "https"
 nginx_adress: "localhost"
 port: 8081

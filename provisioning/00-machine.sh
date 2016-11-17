@@ -17,7 +17,7 @@ sed -i 's/deb cdrom.*//' /etc/apt/sources.list
 
 # Update repositories
 apt-get update
-apt-get install -y sudo
+apt-get install -y sudo git curl wget
 
 # Install "install" as sudo
 gpasswd -a install sudo
