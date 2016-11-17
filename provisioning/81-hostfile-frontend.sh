@@ -11,7 +11,7 @@ fi
 
 add_host () {
     if ! grep /etc/hosts $1 >/dev/null 2>&1; then
-        echo "$2 $1" >/etc/hosts
+        echo "$2 $1" >>/etc/hosts
     fi
 }
 
