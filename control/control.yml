@@ -1,0 +1,15 @@
+---
+admin_key: ../keys/id_cis_admin
+frontend:
+    services:
+        - nginx
+    hosts:
+        - cisfe
+worker:
+    services:
+        - docker
+        - cisd
+        - nginx
+    hosts:
+        - cism1
+        - cism2
