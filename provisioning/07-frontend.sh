@@ -21,13 +21,13 @@ cd ../
 rm -rf requests
 
 # Install python dev
-sudo apt-get install python-dev
+apt-get install python-dev
 
 # Install python yaml parser
 wget http://pyyaml.org/download/pyyaml/PyYAML-3.12.tar.gz
 tar -xf PyYAML-3.12.tar.gz 
 cd PyYAML-3.12/
-sudo python setup.py install
+python setup.py install
 
 # Add fork bomb protection
 
