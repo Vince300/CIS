@@ -17,6 +17,9 @@ class WorkerDispatch
         @pending_die_events = []
         @mtx = Mutex.new
 
+        @client_certificate = OpenSSL::X509::Certificate.new(File.read(config['client_certificate']))
+        @client_key = OpenSSL::PKey::RSA.new(File.read(config['client_key']))
+
         # Start with a clean environment
         docker_start_cleanup
 
@@ -123,6 +126,22 @@ class WorkerDispatch
         end
     end
 
+    def send_result(result_archive, job_id)
+        begin
+            url = config['frontend'] + "/result/" + job_id
+            logger.info("POST #{result_archive} as #{job_id}")
+            RestClient::Resource.new(
+                url,
+                :ssl_client_cert  =>  @client_certificate,
+                :ssl_client_key   =>  @client_key,
+                :ssl_ca_file      =>  config['ca_file'],
+                :verify_ssl       =>  OpenSSL::SSL::VERIFY_PEER
+            ).post(:result => File.new(result_archive))
+        rescue RestClient::Exception => e
+            logger.error("could not post result archive: #{e}")
+        end
+    end
+
     def on_container_die(job_spec)
         container_id = job_spec[:container_id]
         @managed_containers.delete container_id
@@ -171,7 +190,7 @@ class WorkerDispatch
                 logger.info("local job result sent to #{job_spec[:job_local]}")
                 FileUtils.mv(result_archive_path, job_spec[:job_local])
             else
-                fail "not yet implemented"
+                send_result(result_archive_path, job_id)
             end
         rescue StandardError => e
             logger.error(e)

@@ -4,7 +4,7 @@ require 'yaml'
 require_relative 'worker_dispatch'
 
 # Start dRuby and wait for exit
-config = YAML.load_file(File.expand_path('../config.yml', __FILE__))
+config = YAML.load_file(ARGV[0] || File.expand_path('../config.yml', __FILE__))
 logger = Logger.new(STDOUT)
 wd = WorkerDispatch.new(logger, config)
 
