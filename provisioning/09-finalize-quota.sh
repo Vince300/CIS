@@ -16,7 +16,7 @@ fi
 apt-get install -y quota
 
 # Create quota files
-quotacheck -fmcu /
+eequotacheck -fmcu /
 
 # Generate the table of current disk usage
 quotacheck -mfavu
