@@ -6,12 +6,6 @@ if [[ $EUID -ne 0 ]]; then
     exit 1
 fi
 
-# We need the daemons gem
-/usr/local/rvm/bin/rvm default do gem install daemons
-
-# Edit nginx config to run as grid user
-sed -i 's/user .*;/user grid;/' /etc/nginx/nginx.conf
-
 # Extract the archive to /srv/worker
 mkdir -p /srv/worker/public
 tar -C /srv/worker --strip-components 1 -xf workerd.tar.gz

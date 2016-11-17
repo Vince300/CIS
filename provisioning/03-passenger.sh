@@ -36,5 +36,8 @@ usermod -a -G rvm grid
 # Delete default site
 rm -f /etc/nginx/sites-enabled/default
 
+# Edit nginx config to run as grid user
+sed -i 's/user .*;/user grid;/' /etc/nginx/nginx.conf
+
 # Reload config
 service nginx reload
