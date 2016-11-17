@@ -47,6 +47,7 @@ mv machine.{crt,key} /srv/
 chown grid:grid /srv/*
 chmod 0400 /srv/*
 ./06-workerd.sh
+./80-hostfile-worker.sh
 ./99-finalize.sh
 ```
 
@@ -125,6 +126,7 @@ chmod 0400 /srv/*
 ./07-frontend.sh
 cat 08-quota.txt
 ./09-finalize-quota.sh
+./81-hostfile-frontend.sh
 ./99-finalize.sh
 ```
 
