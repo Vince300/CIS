@@ -173,7 +173,7 @@ class WorkerDispatch
             # Tar the files
             logger.info("preparing the result archive")
             
-            unless system("tar", "-C", tmp_dir, "-czf", result_archive_path, "job.log", "output.log", results_dir)
+            unless system("tar", "-C", tmp_dir, "-czf", result_archive_path, "job.log", "output.log", "results")
                 # failed to prepare the archive, this is fatal
                 fail "could not prepare result archive"
             end
