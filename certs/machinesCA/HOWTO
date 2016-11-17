@@ -1,0 +1,3 @@
+openssl genrsa -out ensipc377.key 2048
+openssl req -new -key ensipc377.key -out ensipc377.csr
+openssl x50 -req -in ensipc377.csr -CA cis2machines.pem -CAkey cis2machines.key -CAcreateserial -out ensipc377.crt -days 180 -sha256
