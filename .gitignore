@@ -4,6 +4,8 @@
 *.toc
 *.pyc
 *.pdf
+*.swp
 scripts/.xinitrc
 scripts/sftp-config.json
+sinatra/sftp-config.json
 .nfs*

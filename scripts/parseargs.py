@@ -1,7 +1,7 @@
 
 
-recognized_boolean_arguments = ['local']
-recognized_paramatered_arguments = ['job']
+recognized_boolean_arguments = []
+recognized_paramatered_arguments = ['job', 'in', 'out', 'name']
 
 def parseargs(args):
 	arg_list = {}
