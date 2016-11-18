@@ -14,7 +14,7 @@ def with_workerd(config)
             @workerd = DRbObject.new_with_uri(config['service_url'])
         end
         
-        halt yield(@workerd)
+        halt 200, yield(@workerd)
     rescue DRb::DRbConnError
         # One more try
         attempt = attempt + 1
@@ -37,7 +37,7 @@ end
 get '/stat/:what' do |what|
     with_workerd(config) do |workerd|
         begin
-            workerd.get_stat(what.to_s)
+            workerd.get_stat(what.to_s).to_s
         rescue StandardError => e
             logger.error(e)
             halt 404, e.message
