@@ -5,7 +5,7 @@ require 'fileutils'
 
 LOCAL_WORKERS = ["https://ensipc375", "https://ensipc377"]
 
-DISTANT_WORKERS = ["https://ensipc351", "https://ensipc354", "https://ensipc386"]
+DISTANT_WORKERS = ["https://ensipc351", "https://ensipc354", "https://ensipc386", "https://ensipc389"]
 
 WORKER_LOAD_LIMIT = 32
 
