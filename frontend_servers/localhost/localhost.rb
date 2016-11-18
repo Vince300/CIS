@@ -24,6 +24,7 @@ ca_others_file = "/srv/cisothersca.pem"
 # Receive a job request
 post '/job/:id' do |id|
 
+	username = /^.*\/CN=(.*)$/.match(request.env['HTTP_X_SSL_CLIENT_S_DN'])[1]
 
 	# Abort on missing input file
 	unless params.include? 'job' and params['job'].include? :tempfile 
@@ -44,8 +45,6 @@ post '/job/:id' do |id|
 	 
 	worker_url = LOCAL_WORKERS[id_worker]
 
-	username = "todelete"
-
 	time = Time.new
 	if last_date != time.day
 		last_date = time.day
@@ -61,8 +60,7 @@ post '/job/:id' do |id|
 		halt 429, "Trop de requêtes journalières"
 	end
 
-
-	 begin
+	begin
 		RestClient::Resource.new(
 			worker_url + "/job/"+id_to_send,
 			:ssl_client_cert  =>  client_cert,
@@ -70,9 +68,9 @@ post '/job/:id' do |id|
 			:ssl_ca_file      =>  ca_machines_file,
 			:verify_ssl       =>  OpenSSL::SSL::VERIFY_PEER
 		).post(:job => job_file)
-	 rescue RestClient::Exception => e
+	rescue RestClient::Exception => e
 		puts e
-	 	status 503
-	 	body e.response
-	 end
+		status 503
+		body e.response
+	end
 end
