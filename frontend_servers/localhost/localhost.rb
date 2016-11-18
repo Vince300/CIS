@@ -33,9 +33,7 @@ post '/job/:id' do |id|
 	id_worker = rand LOCAL_WORKERS.length
 	 
 	 
-	 worker_url = LOCAL_WORKERS[id_worker]
-
-	username = "todelete"
+	worker_url = LOCAL_WORKERS[id_worker]
 
 	time = Time.new
 	if last_date != time.day
@@ -52,8 +50,7 @@ post '/job/:id' do |id|
 		halt 429, "Trop de requêtes journalières"
 	end
 
-
-	 begin
+	begin
 		RestClient::Resource.new(
 			worker_url + "/job/"+id_to_send,
 			:ssl_client_cert  =>  OpenSSL::X509::Certificate.new(File.read("/srv/machine.crt")),
@@ -61,9 +58,9 @@ post '/job/:id' do |id|
 			:ssl_ca_file      =>  "/srv/machines.pem",
 			:verify_ssl       =>  OpenSSL::SSL::VERIFY_PEER
 		).post(:job => job_file)
-	 rescue RestClient::Exception => e
+	rescue RestClient::Exception => e
 		puts e
-	 	status 503
-	 	body e.response
-	 end
+		status 503
+		body e.response
+	end
 end
