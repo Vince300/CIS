@@ -5,7 +5,9 @@ frontend:
         - nginx
     hosts:
         - cisfe
-worker:
+    actions:
+        fetch-logs: sudo tail -n 100 /var/log/nginx/error.log
+workers:
     services:
         - docker
         - cisd
@@ -13,3 +15,5 @@ worker:
     hosts:
         - cism1
         - cism2
+    actions:
+        fetch-logs: sudo journalctl -u cisd.service | tail -n 100
