@@ -45,13 +45,12 @@ Dans cette section, nous allons présenter toutes les limites de l'utilisateur.
 	\begin{tabular}{| L{8cm} | c | c |}
 		\hline
 		\rowcolor{lightgray} \multicolumn{1}{|c|}{{\bf Critère}} & {\bf Valeur} & {\bf Outil utilisé} \\ \hline
-		Nombre maximum de jobs lancé par utilisateur & 500 & frontendservers/localhost.rb \\ \hline
-		Nombre maximum de jobs journaliers par utilisateur & ? & ? \\ \hline
-		Ressources journalières accordées au site & ? & ? \\ \hline
-		Nombre maximum de jobs simultanés par site & ? & ? \\ \hline
-		Ressources destinées au traitement des requêtes des autres sites & ? & ? \\ \hline
-		Limitation des quotas d'un utilisateur (en Mo) & 1000 Mo & scripts/createuser \\ \hline
-		Limitation du nombre d'essais d'un job & ? & ? \\ \hline
+		Nombre maximum de jobs lancé par utilisateur & 15 & frontendservers/localhost.rb \\ \hline
+		Nombre maximum de jobs journaliers par utilisateur & 500 & frontendservers/localhost.rb \\ \hline
+		Nombre maximum de jobs journaliers autorisés par site externe & 1000 & frontendservers/public.rb \\ \hline
+		Nombre maximum de jobs simultanés par site & 30 & Non implémenté \\ \hline
+		Ressources destinées au traitement des requêtes des autres sites & ? & Non implémenté \\ \hline
+		Limitation des quotas d'un utilisateur & 1000 Mo & scripts/createuser \\ \hline
 		Taille maximale de l'archive de soumission d'un job & 10 Mo & worker-deamons/config.yml \\ \hline
 		Taille maximale de l'archive de retour d'un job & 10 Mo & worker-deamons/config.yml \\ \hline
 		Durée maximale du traitement d'un job & 5 min & worker-deamons/config.yml \\ \hline
