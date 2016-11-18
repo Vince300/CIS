@@ -19,11 +19,10 @@ ln -fs /etc/nginx/sites-available/worker /etc/nginx/sites-enabled
 # Prepare the systemd service
 mv /srv/worker/cisd.service /etc/systemd/system
 systemctl daemon-reload
-systemctl start cisd.service
 systemctl enable cisd.service
 
 # Ownership to grid
 chown -R grid:grid /srv/worker
 
-# Restart nginx server
-service nginx reload
+# Restart services
+systemctl restart cisd.service nginx.service

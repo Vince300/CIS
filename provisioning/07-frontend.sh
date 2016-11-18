@@ -9,25 +9,28 @@ if [[ $EUID -ne 0 ]]; then
     exit 1
 fi
 
-# Install requests python library
+# Python-setuptools and python dev
+apt-get install -y python-setuptools python-dev
 
-git clone git://github.com/kennethreitz/requests.git
+# Install requests only if needed
+if ! python -c "import requests" 2>/dev/null; then
+    # Install requests python library
+    git clone git://github.com/kennethreitz/requests.git
 
-apt-get install -y python-setuptools
+    cd requests
+    python setup.py install
+    cd ../
+    rm -rf requests
+fi
 
-cd requests
-python setup.py install
-cd ../
-rm -rf requests
-
-# Install python dev
-apt-get install -y python-dev
-
-# Install python yaml parser
-wget http://pyyaml.org/download/pyyaml/PyYAML-3.12.tar.gz
-tar -xf PyYAML-3.12.tar.gz 
-cd PyYAML-3.12/
-python setup.py install
+if ! python -c "import yaml" 2>/dev/null; then
+    # Install python yaml parser
+    wget http://pyyaml.org/download/pyyaml/PyYAML-3.12.tar.gz
+    tar -xf PyYAML-3.12.tar.gz 
+    cd PyYAML-3.12/
+    python setup.py install
+    cd ../
+fi
 
 # Add fork bomb protection
 
@@ -39,9 +42,6 @@ echo "# Default limit for number of user's processes to prevent
 admin      soft    nproc     unlimited
 grid       soft    nproc     unlimited
 root       soft    nproc     unlimited" > /etc/security/limits.d/20-nproc.conf
-
-# Restore wd
-cd ..
 
 # scripts provisioning
 tar xf frontend_scripts.tar.gz
@@ -96,3 +96,6 @@ cp -r public /srv
 chown grid:grid -R /srv/machine
 chown grid:grid -R /srv/localhost
 chown grid:grid -R /srv/public
+
+# Restart nginx
+systemctl restart nginx

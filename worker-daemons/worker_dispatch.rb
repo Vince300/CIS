@@ -61,6 +61,15 @@ class WorkerDispatch
         end
     end
 
+    def get_stat(what)
+        logger.info("get_stat #{what}")
+        if what == 'running_jobs'
+            return @managed_containers.length
+        else
+            failrq("stat #{what} not found")
+        end
+    end
+
     private
     def failrq(msg)
         logger.warn(msg)
