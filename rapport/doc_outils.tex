@@ -18,10 +18,18 @@ Chaque utilisateur à accès à un script python {\tt lancerjob} paramétrable, 
 	\item[--externalize] (optionnel) : url ou envoyer le job. Réparti automatiquement si non spécifié
 \end{description}
 
-- Daemon workers (Ruby) 
+\section{Workers : Exécution de jobs isolés via Docker}
 
-TODO Vincent
+Sur les ``workers'' qui réalisent les jobs des utilisateurs, Docker a été utilisé pour fournir des environnements
+isolés. Les limites d'espace disque, de mémoire et de CPU sont définies lors du lancement d'un conteneur tel qu'indiqué
+dans la documentation de Docker\footnote{https://docs.docker.com/engine/reference/run/}.
 
-- Conteneur docker
+Docker envoie ensuite des évènements qui indiquent l'état des conteneurs, ce qui permet de détecter la terminaison d'un
+job sans utiliser de mécanisme de polling.
 
-TODO Vincent
+Afin d'écouter les évènements Docker et de lancer les jobs à partir des fichiers envoyés par le frontend, un daemon
+systemd est exécuté sur les workers. Ce daemon est responsable d'envoyer les fichiers de résultat mais aussi de gérer
+l'expiration des conteneurs conformément à la configuration.
+
+Les processus Ruby gérés par nginx/Passenger communiquent avec ce daemon en utilisant dRuby (framework d'appel de
+méthode à distance, utilisable isolé sur une machine sur l'interface loopback pour localhost).
