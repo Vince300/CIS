@@ -50,6 +50,7 @@ post '/job/:id' do |id|
     end
 
     if daily_quota[cn] > config['max_daily_jobs']
+        puts "site #{cn} exceeded its daily quota"
         halt 429, "Too many daily requests"
     end
 
@@ -62,6 +63,7 @@ post '/job/:id' do |id|
             :ssl_ca_file      =>  ca_machines_file,
             :verify_ssl       =>  OpenSSL::SSL::VERIFY_PEER
             ).post(:job => job_file)
+        puts "sent job #{id_to_send} to worker #{worker_url}"
     rescue RestClient::Exception => e
         puts e
         halt 503, e.response
@@ -89,5 +91,7 @@ post '/result/:id' do |id|
 
     cmd = "echo 'The job number #{id} is done, result has been stored in #{filename}' | mail -s 'job #{id} done' #{username}@localhost"
     system(cmd)
+
+    puts "delivered the result of job #{id}"
     status 200
 end

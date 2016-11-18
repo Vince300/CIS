@@ -38,6 +38,7 @@ post '/job/:id' do |id|
     end
 
     if daily_quota[username] > config['max_daily_jobs']
+        puts "#{username} exceeded its daily quota"
         halt 429, "Trop de requêtes journalières"
     end
 
@@ -45,6 +46,7 @@ post '/job/:id' do |id|
     externalize_host = nil if not externalize_host.nil? and externalize_host.empty?
 
     if externalize_host and not config['distant_sites'].include? externalize_host
+        puts "denied external host #{externalize_host} for #{username}"
         halt 403, "Hôte externe non autorisé"
     end
 
@@ -67,7 +69,7 @@ post '/job/:id' do |id|
     end
 
     if target
-        id_to_send = "cis2:" + username + ":" + id.to_s 
+        id_to_send = "cis2:" + username + ":" + id.to_s
         begin
             RestClient::Resource.new(
                 target + "/job/"+id_to_send,
@@ -76,6 +78,7 @@ post '/job/:id' do |id|
                 :ssl_ca_file      =>  ca_machines_file,
                 :verify_ssl       =>  OpenSSL::SSL::VERIFY_PEER
             ).post(:job => job_file)
+            puts "dispatched #{id_to_send} to #{target}"
         rescue RestClient::Exception => e
             puts e.message
             halt 503, e.response
@@ -93,7 +96,8 @@ post '/job/:id' do |id|
                 :ssl_client_key   =>  site_key,
                 :ssl_ca_file      =>  ca_others_file,
                 :verify_ssl       =>  OpenSSL::SSL::VERIFY_PEER
-            ).post(:job => job_file, :username => username)
+            ).post(:job => job_file, :user => username)
+            puts "dispatched job #{id} of #{username} to #{site_url}"
         rescue RestClient::Exception => e
             puts e.message
             halt 503, e.response

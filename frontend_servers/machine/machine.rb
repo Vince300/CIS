@@ -28,6 +28,8 @@ post '/result/:id' do |id|
 
         cmd = "echo 'The job number #{job_id} is done, result has been stored in #{filename}' | mail -s 'job #{job_id} done' #{username}@localhost"
         system(cmd)
+
+        puts "delivered the result of job #{id}"
         
         halt 200
     else
@@ -44,6 +46,8 @@ post '/result/:id' do |id|
                 :result => tempfile,
                 :user => username
             )
+
+            puts "sent the result of job #{id} to #{site_url}"
         rescue RestClient::Exception => e
             puts e
             halt 503, e.response
