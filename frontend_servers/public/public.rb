@@ -8,7 +8,7 @@ LOCAL_WORKERS = ["https://ensipc375", "https://ensipc377"]
 
 MAX_FILE_SIZE = 10485760
 
-MAX_DAILY_JOBS = 500
+MAX_DAILY_JOBS = 1000 
 daily_quota = {}
 last_date = nil
 
