@@ -10,6 +10,7 @@ MAX_FILE_SIZE = 10485760
 # Receive a job request
 post '/job/:id' do |id|
 
+	username = /^.*\/CN=(.*)$/.match(request.env['HTTP_X_SSL_CLIENT_S_DN'])[1]
 
 	# Abort on missing input file
 	unless params.include? 'job' and params['job'].include? :tempfile 
