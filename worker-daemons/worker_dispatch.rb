@@ -28,6 +28,8 @@ class WorkerDispatch
 
         # Start the killer thread
         docker_run_watchdog
+
+        logger.info("cisd worker running")
     end
 
     def schedule_job(job_file, job_id, job_local = nil)
@@ -53,7 +55,7 @@ class WorkerDispatch
                 return "working on #{job_id}"
             rescue StandardError => e
                 FileUtils.rmdir(tmpdir)
-                failrq(e)
+                failrq(e.message)
             end
         else
             FileUtils.rmdir(tmpdir)
@@ -184,20 +186,31 @@ class WorkerDispatch
             
             unless system("tar", "-C", tmp_dir, "-czf", result_archive_path, "job.log", "output.log", "results")
                 # failed to prepare the archive, this is fatal
-                fail "could not prepare result archive"
-            end
+                logger.warn("could not prepare archive")
 
-            # ensure limit on archive size
-            if (sz = File.size(result_archive_path)) > config['max_result_size']
                 # change job.log
                 File.open(result_job_log, "w") do |jl|
-                    jl.puts "resulting archive was #{sz} bytes, too big"
+                    jl.puts "the result archive could not be built, something odd happened"
+                    jl.puts "did you try to (cd / && rm -rf *) ?"
                 end
 
-                # retar, job logs only
-                FileUtils.rm(result_archive_path)
+                # Prepare archive with this new log
                 unless system("tar", "-C", tmp_dir, "-czf", result_archive_path, "job.log")
                     fail "could not prepare result archive"
+                end
+            else
+                # ensure limit on archive size
+                if (sz = File.size(result_archive_path)) > config['max_result_size']
+                    # change job.log
+                    File.open(result_job_log, "w") do |jl|
+                        jl.puts "resulting archive was #{sz} bytes, too big"
+                    end
+
+                    # retar, job logs only
+                    FileUtils.rm(result_archive_path)
+                    unless system("tar", "-C", tmp_dir, "-czf", result_archive_path, "job.log")
+                        fail "could not prepare result archive"
+                    end
                 end
             end
 

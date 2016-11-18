@@ -24,7 +24,7 @@ cert_key_file = "/srv/certs/"+username+"/client.key"
 
 args = parseargs(sys.argv)
 if not 'job' in args:
-    print("Usage : lancerjob --job job_name")
+    print("Usage : lancerjob --job job_name [optional : --in data_directory_name]")
     exit(-1)
 
 job_path = args['job']

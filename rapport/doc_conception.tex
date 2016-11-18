@@ -2,4 +2,69 @@
 
 \chapter{Documentation de conception}
 
-Blablabla.
+L'architecture de la grille du site est divisée en 3 points.
+
+\section{Architecture du site}
+
+Le site est organisé de la façon suivante. \\
+
+L'utilisateur n'a accès qu'au frontend : lorsqu'il soumet un job, celui-ci est envoyé au frontend. C'est ce dernier qui s'occupera de déléguer le job à une autre machine (worker) du réseau. \\
+
+Les workers sont isolés du réseau : seul le frontend y a accès. Pour cela, les workers et le frontend sont connectés via un Hub sur leur interface eth0. Seul le frontend est connecté au réseau de l'Ensimag via l'interface eth1, ce qui lui permet d'avoir accès à internet et d'être accessible par les utilisateurs. \\
+
+L'accès aux workers se fait grâce à une table de routage. Lorsque l'on veut communiquer avec un worker, on passe d'abord par le frontend. Celui-ci va nous router vers le worker demandé.
+
+La figure \ref{net_arch} résume l'architecture.
+
+\begin{figure}[!hbtp]
+    \centering
+    \includegraphics[width=13cm]{./images/Network_architecture.png}
+    \label{net_arch}
+    \caption{Architecture du site}
+\end{figure}
+
+\section{Architecture du frontend}
+
+Le frontend dispose de 3 serveurs, tous des sous-instances de nginx : 
+
+\begin{itemize}
+\item[-] un serveur local
+\item[-] un serveur machine
+\item[-] un serveur public \\
+\end{itemize}
+
+Le serveur local permet d'assigner un job à un des workers du site local mais également de déléguer un job à un autre site. Il vérifie avant cela l'authenticité de la requête grâce au certificat. Le cas échéant, elle est transmise aux workers. \\
+
+Lorsqu'un site étranger envoie un job sur le frontend, il est reçu par le serveur public sur l'interface eth1. Après authentification, le serveur se charge ensuite d'assigner le job à un site local via l'interface eth0.
+
+Une fois le job terminé, le serveur machine permet de renvoyer l'archive résultat au site demandeur. \\
+
+En plus de recevoir les jobs des sites distants, le serveur machine permet également de recevoir les jobs terminés des workers du site local. Autrement dit, le serveur machine s'occupe de recevoir tous les jobs terminés et de les renvoyer au bon site. \\
+
+La figure \ref{front_arch} résume l'architecture.
+
+\begin{figure}[!hbtp]
+    \centering
+    \includegraphics[width=13cm]{./images/Frontend_architecture.png}
+    \label{front_arch}
+    \caption{Architecture du frontend}
+\end{figure}
+
+\section{Architecture des workers}
+
+Les workers reçoivent des requêtes de la part du frontend. Nginx se charge de récupérer ces requêtes et de vérifier si elles sont authentiques, c'est à dire si elles ont bien été envoyées par le frontend. \\
+
+Une fois les requêtes filtrées, elles sont envoyées à Passenger qui se charge de les transmettre au {\it Worker Controller}. Celui-ci va vérifier certains paramètres du job de la requêtes, comme par exemple vérifier si l'archive tar existe bel et bien.  \\
+
+Le cas échéant, le job est transmis au démon puis au docker, environnement isolé dans lequel le job va être exécuté. \\
+
+Après terminaison, le démon va renvoyer l'archive résultat au frontend. \\
+
+La figure \ref{work_arch} résume l'architecture.
+
+\begin{figure}[!hbtp]
+    \centering
+    \includegraphics[width=13cm]{./images/Worker_architecture.png}
+    \label{work_arch}
+    \caption{Architecture des workers}
+\end{figure}
