@@ -9,6 +9,7 @@ frontend:
         - cisfe
     actions:
         fetch-logs: sudo tail -n 100 /var/log/nginx/error.log
+        eject: sudo eject
 workers:
     services:
         - docker
@@ -20,3 +21,4 @@ workers:
         - cism2
     actions:
         fetch-logs: sudo journalctl -u cisd.service | tail -n 100
+        eject: sudo eject
