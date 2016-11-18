@@ -3,13 +3,13 @@ Description=CIS workerd service
 After=docker.service
 
 [Service]
-Type=forking
 User=grid
 Group=grid
 WorkingDirectory=/srv/worker
-ExecStart=/usr/local/rvm/bin/rvm default do ruby /srv/worker/workerd.rb /srv/worker/config.yml -d
+ExecStart=/usr/local/rvm/bin/rvm default do ruby /srv/worker/workerd.rb /srv/worker/config.yml
 Restart=always
 StandardOutput=journal+console
+StandardError=journal+console
 
 [Install]
 WantedBy=multi-user.target

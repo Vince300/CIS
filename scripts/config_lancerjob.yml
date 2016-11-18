@@ -1,4 +1,5 @@
-cert_server_file: "/srv/cis2users.crt"
+cert_server_file: "/srv/cis2ca.pem"
 protocol: "https"
 nginx_adress: "localhost"
 port: 443
+

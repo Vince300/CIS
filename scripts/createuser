@@ -44,8 +44,10 @@ inode_softlimit = conf['inode_softlimit']
 inode_hardlimit = conf['inode_hardlimit']
 subprocess.call("sudo setquota -u " + username + " " + "{} {} {} {}".format(block_softlimit,block_hardlimit,inode_softlimit,inode_hardlimit) +  " -a /" ,shell=True)
 
+
 # chmod the homefile 
 subprocess.call("sudo chmod og-rwx /home/" + username,shell=True)
+call("sudo setfacl -m u:grid:rwx /home/" + username)
 
 # Create certificates used to POST to localhost
 call("mkdir /srv/certs/"+username)
