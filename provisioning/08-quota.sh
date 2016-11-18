@@ -9,6 +9,9 @@ if [[ $EUID -ne 0 ]]; then
     exit 1
 fi
 
+# Install quota
+apt-get install -y quota
+
 if ! grep /etc/fstab usrquota >/dev/null 2>&1 ; then
     sed -i 's/\(.*\/.*ext4.*errors=remount-ro\)/\1,usrquota/' /etc/fstab
     echo "Please reboot the machine now!" 1>&2

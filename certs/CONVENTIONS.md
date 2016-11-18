@@ -28,4 +28,7 @@ Site certificate key
 	/srv/cis2.key
 
 Site CA
-	/srv/cis2.pem
+    /srv/cis2.pem
+
+Sites externes CA
+    /srv/cisothersca.pem

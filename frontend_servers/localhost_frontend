@@ -11,4 +11,6 @@ server {
 	root /srv/localhost/public;
 	passenger_enabled on;
 	passenger_ruby /usr/local/rvm/wrappers/ruby-2.3.1/ruby;
+
+	passenger_set_header X-SSL-Client-S-DN $ssl_client_s_dn;
 }

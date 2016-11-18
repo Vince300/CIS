@@ -24,7 +24,7 @@ cert_key_file = "/srv/certs/"+username+"/client.key"
 
 args = parseargs(sys.argv)
 if not 'job' in args:
-    print("Usage : lancerjob --job job_name")
+    print("Usage : lancerjob --job job_name [optional : --in data_directory_name]")
     exit(-1)
 
 job_path = args['job']
@@ -45,7 +45,7 @@ if data_path:
 call("(cd " + temp_tar + "; tar zcf arch.tar.gz *)")
 
 try:
-	request = requests.post(protocol + "://" + nginx_adress + ":" + str(port) + "/job/" + username+":"+str(id_job), \
+	request = requests.post(protocol + "://" + nginx_adress + ":" + str(port) + "/job/" + str(id_job), \
 		verify=cert_server_file,\
 		cert=(cert_cert_file, cert_key_file), \
 		files={'job': ('arch.tar.gz', open(user_folder+"/"+temp_tar+'/arch.tar.gz', 'rb'), 'multipart/form-data', {'Expires': '0'})}  )

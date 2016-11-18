@@ -12,9 +12,6 @@ if [[ $EUID -ne 0 ]]; then
     exit 1
 fi
 
-# Install quota
-apt-get install -y quota
-
 # Create quota files
 eequotacheck -fmcu /
 

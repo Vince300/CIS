@@ -1,15 +1,26 @@
 ---
 admin_key: ../keys/id_cis_admin
+provisioning_dir: ../provisioning
 frontend:
     services:
         - nginx
+    deploy:
+        - sudo ./07-frontend.sh
+        - rm -rf *
     hosts:
         - cisfe
-worker:
+    actions:
+        fetch-logs: sudo tail -n 100 /var/log/nginx/error.log
+workers:
     services:
         - docker
         - cisd
         - nginx
+    deploy:
+        - sudo ./06-workerd.sh
+        - rm -rf *
     hosts:
         - cism1
         - cism2
+    actions:
+        fetch-logs: sudo journalctl -u cisd.service | tail -n 100

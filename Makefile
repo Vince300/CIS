@@ -13,7 +13,7 @@ FRONTEND_SCRIPTS_FILES=$(wildcard scripts/*)
 
 FRONTEND_SERVERS_OUTPUT=$(OUTPUT_FOLDER)/frontend_servers$(TAR_EXT)
 FRONTEND_SERVERS_FILES=$(wildcard frontend_servers/*) $(wildcard frontend_servers/localhost/*) \
-	$(wildcard frontend_servers/machine/*)
+	$(wildcard frontend_servers/machine/*) $(wildcard frontend_servers/public/*)
 
 ALL=$(WORKERD_OUTPUT) $(FRONTEND_SCRIPTS_OUTPUT) $(FRONTEND_SERVERS_OUTPUT)
 

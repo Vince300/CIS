@@ -6,24 +6,7 @@ require_relative 'worker_dispatch'
 
 config = YAML.load_file(File.expand_path('../config.yml', __FILE__))
 
-post '/job/:id' do |id|
-    # Abort on missing input file
-    unless params.include? 'job' and params['job'].include? :tempfile 
-        halt 400
-    end
-
-    # Log the CN
-    puts headers['X-SSL-Client-S-DN']
-    puts headers['X-SSL-Client-Verify']
-
-    # Job file
-    job_file = params['job'][:tempfile]
-
-    # Abort if the file size is too important
-    if job_file.size > config['max_file_size']
-        halt 413
-    end
-
+def with_workerd
     attempt = 0
     begin
         # Ensure we have access to the worker object
@@ -31,7 +14,7 @@ post '/job/:id' do |id|
             @workerd = DRbObject.new_with_uri(config['service_url'])
         end
         
-        halt @workerd.schedule_job(job_file.path, id)
+        halt yield(@workerd)
     rescue DRb::DRbConnError
         # One more try
         attempt = attempt + 1
@@ -47,5 +30,42 @@ post '/job/:id' do |id|
     rescue StandardError => e
         # Generic error
         halt 415, e.message
+    end
+end
+
+get '/stat' do
+    unless params.include? 'what'
+        halt 400
+    end
+
+    with_workerd do |workerd|
+        begin
+            workerd.get_stat(params['what'].to_s)
+        rescue StandardError => e
+            halt 404, e.message
+        end
+    end
+end
+
+post '/job/:id' do |id|
+    # Abort on missing input file
+    unless params.include? 'job' and params['job'].include? :tempfile 
+        halt 400
+    end
+
+    # Log the CN
+    logger.debug(request.env['HTTP_X_SSL_CLIENT_S_DN'])
+
+    # Job file
+    job_file = params['job'][:tempfile]
+
+    # Abort if the file size is too important
+    if job_file.size > config['max_file_size']
+        halt 413
+    end
+
+    # Actually schedule the job
+    with_workerd do |workerd|
+        workerd.schedule_job(job_file.path, id)
     end
 end
