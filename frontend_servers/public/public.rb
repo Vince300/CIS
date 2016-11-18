@@ -21,12 +21,9 @@ ca_machines_file = "/srv/machines.pem"
 
 # Receive a job request
 post '/job/:id' do |id|
-
-
 	# Abort on missing input file
 	unless params.include? 'job' and params['job'].include? :tempfile 
-		status 400
-		break
+		halt 400
 	end
 
 	job_file = params['job'][:tempfile]
@@ -35,14 +32,23 @@ post '/job/:id' do |id|
 		halt 413
 	end
 
-	cn = (request.env['HTTP_X_SSL_CLIENT_S_DN'].split('/').map { |dn_part| dn_part.split('=') }.find { |dn_part| dn_part[0] == 'CN' })[1]
-
+	# Check for username
 	username = params['user'] || params['username']
 
-	id_to_send = ip_table[cn] + ':' + username + ':' id.to_s
+	unless username
+		halt 400
+	end
 
-	id_worker = rand LOCAL_WORKERS.length
+	# Find CN in ip_table
+	cn = (request.env['HTTP_X_SSL_CLIENT_S_DN'].split('/').map { |dn_part| dn_part.split('=') }.find { |dn_part| dn_part[0] == 'CN' })[1]
 	
+	# Deny requests for unknown
+	unless ip_table[cn]
+		halt 403
+	end
+
+	id_to_send = "#{ip_table[cn]}:#{username}:#{id}"
+	id_worker = rand LOCAL_WORKERS.length
 	
 	time = Time.new
 	if last_date != time.day
@@ -59,7 +65,6 @@ post '/job/:id' do |id|
 		halt 429, "Too many daily requests"
 	end
 
-
 	worker_url = LOCAL_WORKERS[id_worker]
 	begin
 		RestClient::Resource.new(
@@ -71,12 +76,13 @@ post '/job/:id' do |id|
 			).post(:job => job_file)
 	rescue RestClient::Exception => e
 		puts e
-		status 503
-		body e.response
+		halt 503, e.response
+	rescue StandardError => e
+		halt 500
 	end
 end
 
-# Receive response from worker
+# Receive response from distant entity
 post '/result/:id' do |id|
 	# Abort on missing input file
 	unless params.include? 'result' and params['result'].include? :tempfile 
@@ -92,6 +98,11 @@ post '/result/:id' do |id|
 
 	# Get username
 	username = params['user'] || params['username']
+
+	unless username
+		halt 400
+	end
+
 	dirname = "job_" + DateTime.now.strftime("%e_%-m_%y__%k_%M_%S") 
 	filename = "/home/"+username+"/"+dirname+"temp.tar.gz"
 	FileUtils.cp(result_file.path, filename)

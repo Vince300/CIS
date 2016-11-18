@@ -29,7 +29,7 @@ post '/result/:id' do |id|
 		system(cmd)
 		status 200
 	else
-
+		puts "got result for #{id}"
 		site_url = sites_table[id_split[0]]
 		begin
 			RestClient::Resource.new(

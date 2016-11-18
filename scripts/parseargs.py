@@ -1,7 +1,7 @@
 
 
-recognized_boolean_arguments = ['externalize']
-recognized_paramatered_arguments = ['job', 'in']
+recognized_boolean_arguments = []
+recognized_paramatered_arguments = ['job', 'in', 'externalize']
 
 def parseargs(args):
 	arg_list = {}
