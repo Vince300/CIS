@@ -2,6 +2,7 @@ require 'sinatra'
 require 'rest_client'
 require 'date'
 require 'fileutils'
+require 'yaml'
 require_relative '../helpers.rb'
 
 config = YAML.load_file(File.expand_path('../../config.yml', __FILE__))
@@ -30,13 +31,13 @@ post '/job/:id' do |id|
         last_date = time.day
         daily_quota = Hash.new()
     end
-    if daily_quota[:username] == nil
-        daily_quota[:username] = 1
+    if daily_quota[username].nil?
+        daily_quota[username] = 1
     else
-        daily_quota[:username] += 1
+        daily_quota[username] += 1
     end
 
-    if daily_quota[:username] > config['max_daily_jobs']
+    if daily_quota[username] > config['max_daily_jobs']
         halt 429, "Trop de requêtes journalières"
     end
 

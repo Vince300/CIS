@@ -43,13 +43,13 @@ post '/job/:id' do |id|
         last_date = time.day
         daily_quota = Hash.new()
     end
-    if daily_quota[:cn] == nil
-        daily_quota[:cn] = 1
+    if daily_quota[cn].nil?
+        daily_quota[cn] = 1
     else
-        daily_quota[:cn] += 1
+        daily_quota[cn] += 1
     end
 
-    if daily_quota[:cn] > config['max_daily_jobs']
+    if daily_quota[cn] > config['max_daily_jobs']
         halt 429, "Too many daily requests"
     end
 
