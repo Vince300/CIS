@@ -8,4 +8,29 @@ Pour les trois machines le choix des operating systems s'est porté sur une dist
 
 \section{Provisionnement}
 
-Pour l'installation de notre architecture, un dossier {\it provisioning} comprend l'ensemble des scripts d'installation, à exécuter dans l'ordre. Il faut également positioner les clés et les certificats à la main sur les machines (cf {\tt 04-install-keys-*.txt}). Le dossier {\it control} contient un exécutable {\tt control} qui exécute tous les scripts de manière automatique ETC CF VINCENT
+Pour l'installation de notre architecture, un dossier {\it provisioning} comprend l'ensemble des scripts d'installation,
+à exécuter dans l'ordre selon les instructions d'installation (cf. {\it PROVISIONING.md}). Il faut également positioner
+les clés et les certificats à la main sur les machines (cf. étape {\tt 04-install-keys-*.txt}).
+
+Le dossier {\it control} contient un exécutable {\it control} qui permet d'exécuter certaines tâches de maintenance sur
+les différentes classes de machines qui font partie de notre architecture, comme dans les exemples ci-dessous. 
+
+\begin{verbatim}
+# Déploiement du code applicatif sur toutes les machines
+./control all deploy
+
+# Déploiement du code applicatif sur tous les workers
+./control workers deploy
+
+# Déploiement du code applicatif sur le frontend
+./control frontend deploy
+
+# Redémarrage des serveurs
+./control all restart-services
+
+# Récupération des logs
+./control all fetch-logs
+\end{verbatim}
+
+Une configuration SSH spécifique ({\it provisioning/config }) permet à l'administrateur de se connecter directement aux
+différents workers en passant par un tunnel au niveau du frontend.
