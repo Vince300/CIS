@@ -3,11 +3,12 @@ require 'rest_client'
 require 'date'
 require 'fileutils'
 require 'yaml'
+require 'uri'
 require_relative '../helpers.yml'
 
 config = YAML.load_file(File.expand_path('../../config.yml', __FILE__))
 sites_table = config['sites_table']
-ip_table = config.map { |key, val| [val, key] }.to_h
+ip_table = config.map { |key, val| [URI.parse(val).host, key] }.to_h
 
 daily_quota = {}
 last_date = nil
