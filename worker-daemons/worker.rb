@@ -6,7 +6,7 @@ require_relative 'worker_dispatch'
 
 config = YAML.load_file(File.expand_path('../config.yml', __FILE__))
 
-def with_workerd
+def with_workerd(config)
     attempt = 0
     begin
         # Ensure we have access to the worker object
@@ -28,20 +28,18 @@ def with_workerd
             halt 503, "could not connect to the workerd"
         end
     rescue StandardError => e
+        logger.error(e)
         # Generic error
         halt 415, e.message
     end
 end
 
-get '/stat' do
-    unless params.include? 'what'
-        halt 400
-    end
-
-    with_workerd do |workerd|
+get '/stat/:what' do |what|
+    with_workerd(config) do |workerd|
         begin
-            workerd.get_stat(params['what'].to_s)
+            workerd.get_stat(what.to_s)
         rescue StandardError => e
+            logger.error(e)
             halt 404, e.message
         end
     end
@@ -65,7 +63,7 @@ post '/job/:id' do |id|
     end
 
     # Actually schedule the job
-    with_workerd do |workerd|
+    with_workerd(config) do |workerd|
         workerd.schedule_job(job_file.path, id)
     end
 end

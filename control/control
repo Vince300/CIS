@@ -22,12 +22,10 @@ def ssh_do(host)
     end
 end
 
-def sftp_do(host)
-    cmd = "sftp -i #{$key_file} admin@#{host}"
+def ssh_capture(host, stdin)
+    cmd = "ssh -i #{$key_file} admin@#{host} 'sudo bash -s'"
     $logger.debug(cmd)
-    Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
-        yield(stdin, stdout, stderr, wait_thr)
-    end
+    Open3.capture2e(['ssh', '-i', $key_file, "admin@#{host}", "sudo bash -s"], stdin)
 end
 
 envs = ARGV.shift
@@ -54,18 +52,14 @@ envs.each do |env|
         elsif action == 'deploy'
             if deploy_commands = config[env]['deploy']
                 $logger.info("[#{env}] [#{host}] pushing deploy files")
-                Dir.chdir(provisioning_dir) do
-                    sftp_do(host) do |stdin, stdout, stderr, wait_thr|
-                        stdin.puts("put *")
-                    end
-                end
+                cmd = "cd \"#{provisioning_dir}\" && echo \"put *\" | sftp -i \"#{$key_file}\" admin@#{host}"
+                $logger.debug(cmd)
+                system(cmd)
 
-                $logger.info("[#{env}] [#{host}] running deploy commands")
-                ssh_do(host) do |stdin, stdout, stderr, wait_thr|
-                    deploy_commands.each do |cmd|
-                        stdin.puts(cmd)
-                    end
-                end
+                $logger.info("[#{env}] [#{host}] running deploy commands #{deploy_commands.inspect}")
+                cmd = "echo \"#{deploy_commands}\" |ssh -i \"#{$key_file}\" admin@#{host} 'bash -s'"
+                $logger.debug(cmd)
+                system(cmd)
             end
         else
             if commands = config[env]['actions'][action]
