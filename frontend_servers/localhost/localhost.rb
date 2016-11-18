@@ -5,7 +5,9 @@ require 'fileutils'
 
 LOCAL_WORKERS = ["https://ensipc375", "https://ensipc377"]
 
-LOCAL_WORKERS = ["https://ensipc375", "https://ensipc377"]
+DISTANT_WORKERS = ["https://ensipc351", "https://ensipc354", "https://ensipc386"]
+
+WORKER_LOAD_LIMIT = 32
 
 MAX_FILE_SIZE = 10485760
 
@@ -38,12 +40,6 @@ post '/job/:id' do |id|
         halt 413
     end
 
-	id_to_send = "cis2:" + id.to_s
-
-	id_worker = rand LOCAL_WORKERS.length
-	 
-	 
-	worker_url = LOCAL_WORKERS[id_worker]
 
 	time = Time.new
 	if last_date != time.day
@@ -60,17 +56,46 @@ post '/job/:id' do |id|
 		halt 429, "Trop de requêtes journalières"
 	end
 
-	begin
+	target = LOCAL_WORKERS.shuffle.find do |worker_url|
 		RestClient::Resource.new(
-			worker_url + "/job/"+id_to_send,
+			worker_url + "/stat"
 			:ssl_client_cert  =>  client_cert,
 			:ssl_client_key   =>  client_key,
 			:ssl_ca_file      =>  ca_machines_file,
 			:verify_ssl       =>  OpenSSL::SSL::VERIFY_PEER
-		).post(:job => job_file)
-	rescue RestClient::Exception => e
-		puts e
-		status 503
-		body e.response
+		).get(:what => 'running_jobs') < WORKER_LOAD_LIMIT
+	end
+
+	if target
+		id_to_send = "cis2:" + id.to_s
+		begin
+			RestClient::Resource.new(
+				worker_url + "/job/"+id_to_send,
+				:ssl_client_cert  =>  client_cert,
+				:ssl_client_key   =>  client_key,
+				:ssl_ca_file      =>  ca_machines_file,
+				:verify_ssl       =>  OpenSSL::SSL::VERIFY_PEER
+			).post(:job => job_file)
+		rescue RestClient::Exception => e
+			puts e
+			status 503
+			body e.response
+		end
+	else 
+		site_url = DISTANT_WORKERS.sample
+		begin
+			RestClient::Resource.new(
+				site_url + "/job/"+id,
+				:ssl_client_cert  =>  site_cert,
+				:ssl_client_key   =>  site_key,
+				:ssl_ca_file      =>  ca_others_file,
+				:verify_ssl       =>  OpenSSL::SSL::VERIFY_PEER
+			).post(:job => job_file, :username => username)
+		rescue RestClient::Exception => e
+			puts e
+			status 503
+			body e.response
+		end
+
 	end
 end
