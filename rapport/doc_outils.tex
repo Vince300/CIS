@@ -9,14 +9,14 @@ nginx permet de filtrer les requêtes en fonction des certificats et de leur pro
 
 \section{Front-end : Lancement de jobs pour les utilisateurs locaux} 
 
-L'administrateur possède un script python 'createuser' lui permettant de créer un nouvel utilisateur, ainsi que de l'équivalent 'deleteuser' pour supprimer un utilisateur. \\
+L'administrateur possède un script python {\tt createuser} lui permettant de créer un nouvel utilisateur, ainsi que de l'équivalent {\tt deleteuser} pour supprimer un utilisateur. \\
 
-Chaque utilisateur à accès à un script python 'lancerjob' paramétrable, lui permettant de lancer l'exécution d'un job :\\
-\begin{itemize}
-\item[-] --job : chemin du job a exécuter
-\item[-] --in (optionnel) : chemin d'un dossier de données à envoyer avec le job
-\item[-] --externalize (optionnel) : url ou envoyer le job. Réparti automatiquement si non spécifié
-\end{itemize}
+Chaque utilisateur à accès à un script python {\tt lancerjob} paramétrable, lui permettant de lancer l'exécution d'un job :\\
+\begin{description}
+	\item[--job] : chemin du job a exécuter
+	\item[--in] (optionnel) : chemin d'un dossier de données à envoyer avec le job
+	\item[--externalize] (optionnel) : url ou envoyer le job. Réparti automatiquement si non spécifié
+\end{description}
 
 - Daemon workers (Ruby) 
 
