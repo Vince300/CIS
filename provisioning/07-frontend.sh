@@ -80,14 +80,19 @@ cd frontend_servers
 
 cp localhost_frontend /etc/nginx/sites-available
 cp machine_frontend /etc/nginx/sites-available
+cp public_frontend /etc/nginx/sites-available
 ln -fs /etc/nginx/sites-available/localhost_frontend /etc/nginx/sites-enabled
 ln -fs /etc/nginx/sites-available/machine_frontend /etc/nginx/sites-enabled
+ln -fs /etc/nginx/sites-available/public_frontend /etc/nginx/sites-enabled
 
 mkdir -p /srv/machine/public
 mkdir -p /srv/localhost/public
+mkdir -p /srv/public/public
 
 cp -r machine /srv
 cp -r localhost /srv
+cp -r public /srv
 
 chown grid:grid -R /srv/machine
 chown grid:grid -R /srv/localhost
+chown grid:grid -R /srv/public
