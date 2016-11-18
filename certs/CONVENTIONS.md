@@ -21,11 +21,11 @@ Users CA
 
 
 Site certificate
-	/srv/cis2.crt
-	CN=ensipc376
+    /srv/cis2.crt
+    CN=ensipc376
 
 Site certificate key
-	/srv/cis2.key
+    /srv/cis2.key
 
 Site CA
     /srv/cis2.pem
