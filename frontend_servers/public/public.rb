@@ -12,7 +12,7 @@ MAX_DAILY_JOBS = 1000
 daily_quota = {}
 last_date = nil
 
-ip_table = YAML.load_file(File.expand_path('./ip-table.yml', __FILE__))
+ip_table = YAML.load_file(File.expand_path('../ip-table.yml', __FILE__))
 
 
 client_cert = OpenSSL::X509::Certificate.new(File.read("/srv/machine.crt"))
