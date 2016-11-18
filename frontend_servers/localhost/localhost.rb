@@ -2,116 +2,108 @@ require 'sinatra'
 require 'rest_client'
 require 'date'
 require 'fileutils'
+require 'yaml'
+require_relative '../helpers.rb'
 
-LOCAL_WORKERS = ["https://ensipc375", "https://ensipc377"]
+config = YAML.load_file(File.expand_path('../../config.yml', __FILE__))
 
-DISTANT_WORKERS = ["https://ensipc351", "https://ensipc354", "https://ensipc386"]
-
-WORKER_LOAD_LIMIT = 32
-
-MAX_FILE_SIZE = 10485760
-
-MAX_DAILY_JOBS = 500
 daily_quota = {}
 last_date = nil
 
-client_cert = OpenSSL::X509::Certificate.new(File.read("/srv/machine.crt"))
-client_key = OpenSSL::PKey::RSA.new(File.read("/srv/machine.key"))
-ca_machines_file = "/srv/machines.pem"
+client_cert = OpenSSL::X509::Certificate.new(File.read(config['localhost']['cert']))
+client_key = OpenSSL::PKey::RSA.new(File.read(config['localhost']['key']))
+ca_machines_file = config['localhost']['ca']
 
-site_cert = OpenSSL::X509::Certificate.new(File.read("/srv/cis2.crt"))
-site_key = OpenSSL::PKey::RSA.new(File.read("/srv/cis2.key"))
-ca_others_file = "/srv/cisothersca.pem"
+site_cert = OpenSSL::X509::Certificate.new(File.read(config['site']['cert']))
+site_key = OpenSSL::PKey::RSA.new(File.read(config['site']['key']))
+ca_others_file = config['others']['ca']
 
 # Receive a job request
 post '/job/:id' do |id|
+    # Get the username from its CA
+    username = /^.*\/CN=(.*)$/.match(request.env['HTTP_X_SSL_CLIENT_S_DN'])[1]
 
-	username = /^.*\/CN=(.*)$/.match(request.env['HTTP_X_SSL_CLIENT_S_DN'])[1]
+    # Abort on invalid input file
+    job_file = check_file_param(params, 'job', config['max_file_size'])
 
-	# Abort on missing input file
-	unless params.include? 'job' and params['job'].include? :tempfile 
-		status 400
-		break
-	end
-
-    job_file = params['job'][:tempfile]
-
-    if job_file.size > MAX_FILE_SIZE
-        halt 413
+    time = Time.new
+    if last_date != time.day
+        last_date = time.day
+        daily_quota = Hash.new()
+    end
+    if daily_quota[username].nil?
+        daily_quota[username] = 1
+    else
+        daily_quota[username] += 1
     end
 
+    if daily_quota[username] > config['max_daily_jobs']
+        puts "#{username} exceeded its daily quota"
+        halt 429, "Trop de requêtes journalières"
+    end
 
-	time = Time.new
-	if last_date != time.day
-		last_date = time.day
-		daily_quota = Hash.new()
-	end
-	if daily_quota[:username] == nil
-		daily_quota[:username] = 1
-	else
-		daily_quota[:username] += 1
-	end
+    externalize_host = params['externalize']
+    externalize_host = nil if not externalize_host.nil? and externalize_host.empty?
 
-	if daily_quota[:username] > MAX_DAILY_JOBS
-		halt 429, "Trop de requêtes journalières"
-	end
+    if externalize_host and not config['distant_sites'].include? externalize_host
+        puts "denied external host #{externalize_host} for #{username}"
+        halt 403, "Hôte externe non autorisé"
+    end
 
-	externalize_host = params['externalize']
-	externalize_host = nil if not externalize_host.nil? and externalize_host.empty?
+    target = nil
+    unless externalize_host
+        target = config['local_workers'].shuffle.find do |worker_url|
+            begin
+                RestClient::Resource.new(
+                    worker_url + "/stat/running_jobs",
+                    :ssl_client_cert  =>  client_cert,
+                    :ssl_client_key   =>  client_key,
+                    :ssl_ca_file      =>  ca_machines_file,
+                    :verify_ssl       =>  OpenSSL::SSL::VERIFY_PEER
+                ).get.body.to_i < config['worker_load_limit']
+            rescue StandardError => e
+                puts e.message
+                false
+            end
+        end
+    end
 
-	if externalize_host and not DISTANT_WORKERS.include? externalize_host
-		halt 403, "Hôte externe non autorisé"
-	end
+    if target
+        id_to_send = "cis2:" + username + ":" + id.to_s
+        begin
+            RestClient::Resource.new(
+                target + "/job/"+id_to_send,
+                :ssl_client_cert  =>  client_cert,
+                :ssl_client_key   =>  client_key,
+                :ssl_ca_file      =>  ca_machines_file,
+                :verify_ssl       =>  OpenSSL::SSL::VERIFY_PEER
+            ).post(:job => job_file)
+            puts "dispatched #{id_to_send} to #{target}"
+        rescue RestClient::Exception => e
+            puts e.message
+            halt 503, e.response
+        rescue StandardError => e
+            puts e.message
+            halt 503, "Impossible de contacter le worker choisi"
+        end
+    else 
+        site_url = externalize_host || config['distant_sites'].sample
 
-	target = nil
-	unless externalize_host
-		target = LOCAL_WORKERS.shuffle.find do |worker_url|
-			begin
-				RestClient::Resource.new(
-					worker_url + "/stat/running_jobs",
-					:ssl_client_cert  =>  client_cert,
-					:ssl_client_key   =>  client_key,
-					:ssl_ca_file      =>  ca_machines_file,
-					:verify_ssl       =>  OpenSSL::SSL::VERIFY_PEER
-				).get.body.to_i < WORKER_LOAD_LIMIT
-			rescue StandardError => e
-				logger.error(e)
-				false
-			end
-		end
-	end
-
-	if target
-		id_to_send = "cis2:" + username + ":" + id.to_s 
-		begin
-			RestClient::Resource.new(
-				target + "/job/"+id_to_send,
-				:ssl_client_cert  =>  client_cert,
-				:ssl_client_key   =>  client_key,
-				:ssl_ca_file      =>  ca_machines_file,
-				:verify_ssl       =>  OpenSSL::SSL::VERIFY_PEER
-			).post(:job => job_file)
-		rescue RestClient::Exception => e
-			puts e
-			status 503
-			body e.response
-		end
-	else 
-		site_url = externalize_host || DISTANT_WORKERS.sample
-
-		begin
-			RestClient::Resource.new(
-				site_url + "/job/"+id,
-				:ssl_client_cert  =>  site_cert,
-				:ssl_client_key   =>  site_key,
-				:ssl_ca_file      =>  ca_others_file,
-				:verify_ssl       =>  OpenSSL::SSL::VERIFY_PEER
-			).post(:job => job_file, :username => username)
-		rescue RestClient::Exception => e
-			puts e
-			status 503
-			body e.response
-		end
-
-	end
+        begin
+            RestClient::Resource.new(
+                site_url + "/job/"+id,
+                :ssl_client_cert  =>  site_cert,
+                :ssl_client_key   =>  site_key,
+                :ssl_ca_file      =>  ca_others_file,
+                :verify_ssl       =>  OpenSSL::SSL::VERIFY_PEER
+            ).post(:job => job_file, :user => username)
+            puts "dispatched job #{id} of #{username} to #{site_url}"
+        rescue RestClient::Exception => e
+            puts e.message
+            halt 503, e.response
+        rescue StandardError => e
+            puts e.message
+            halt 503, "Impossible de contacter le site distant #{site_url}"
+        end
+    end
 end

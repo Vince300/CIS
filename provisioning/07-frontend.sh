@@ -89,6 +89,7 @@ mkdir -p /srv/machine/public
 mkdir -p /srv/localhost/public
 mkdir -p /srv/public/public
 
+cp config.yml helpers.rb /srv
 cp -r machine /srv
 cp -r localhost /srv
 cp -r public /srv
@@ -96,6 +97,7 @@ cp -r public /srv
 chown grid:grid -R /srv/machine
 chown grid:grid -R /srv/localhost
 chown grid:grid -R /srv/public
+chown grid:grid /srv/config.yml /srv/helpers.rb
 
 # Restart nginx
 systemctl restart nginx
