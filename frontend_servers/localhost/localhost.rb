@@ -67,7 +67,7 @@ post '/job/:id' do |id|
 	end
 
 	if target
-		id_to_send = "cis2:" + id.to_s
+		id_to_send = "cis2:" + username + ":" + id.to_s 
 		begin
 			RestClient::Resource.new(
 				worker_url + "/job/"+id_to_send,

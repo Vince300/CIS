@@ -8,6 +8,10 @@ LOCAL_WORKERS = ["https://ensipc375", "https://ensipc377"]
 
 MAX_FILE_SIZE = 10485760
 
+MAX_DAILY_JOBS = 500
+daily_quota = {}
+last_date = nil
+
 ip_table = YAML.load_file(File.expand_path('./ip-table.yml', __FILE__))
 
 # Receive a job request
@@ -35,6 +39,20 @@ post '/job/:id' do |id|
 	id_worker = rand LOCAL_WORKERS.length
 	
 	
+	time = Time.new
+	if last_date != time.day
+		last_date = time.day
+		daily_quota = Hash.new()
+	end
+	if daily_quota[:cn] == nil
+		daily_quota[:cn] = 1
+	else
+		daily_quota[:cn] += 1
+	end
+
+	if daily_quota[:cn] > MAX_DAILY_JOBS
+		halt 429, "Too many daily requests"
+	end
 
 
 	worker_url = LOCAL_WORKERS[id_worker]
