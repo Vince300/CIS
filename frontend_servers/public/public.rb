@@ -19,6 +19,8 @@ ca_machines_file = config['machine']['ca']
 
 # Receive a job request
 post '/job/:id' do |id|
+    puts "/job/#{id}"
+
     # Abort on invalid input file
     job_file = check_file_param(params, 'job', config['max_file_size'])
 
