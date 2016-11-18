@@ -6,6 +6,7 @@ server {
 	ssl_certificate /srv/cis2.crt;
 	ssl_certificate_key /srv/cis2.key;
 	ssl_client_certificate /srv/cisothersca.pem;
+	ssl_verify_depth 2;
 	ssl_verify_client on;
 
 	root /srv/public/public;
