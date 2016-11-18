@@ -7,6 +7,10 @@ LOCAL_WORKERS = ["https://ensipc375", "https://ensipc377"]
 
 MAX_FILE_SIZE = 10485760
 
+MAX_DAILY_JOBS = 500
+daily_quota = {}
+last_date = nil
+
 # Receive a job request
 post '/job/:id' do |id|
 
@@ -29,6 +33,25 @@ post '/job/:id' do |id|
 	 
 	 
 	 worker_url = LOCAL_WORKERS[id_worker]
+
+	username = "todelete"
+
+	time = Time.new
+	if last_date != time.day
+		last_date = time.day
+		daily_quota = Hash.new()
+	end
+	if daily_quota[:username] == nil
+		daily_quota[:username] = 1
+	else
+		daily_quota[:username] += 1
+	end
+
+	if daily_quota[:username] > MAX_DAILY_JOBS
+		halt 429, "Trop de requêtes journalières"
+	end
+
+
 	 begin
 		RestClient::Resource.new(
 			worker_url + "/job/"+id_to_send,
