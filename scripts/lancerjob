@@ -10,6 +10,12 @@ import time
 import getpass
 import yaml
 
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+from requests.packages.urllib3.exceptions import SubjectAltNameWarning
+
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+requests.packages.urllib3.disable_warnings(SubjectAltNameWarning)
+
 conf = yaml.load(open("/usr/local/etc/config_lancerjob.yml"))
 
 cert_server_file = conf['cert_server_file']
