@@ -10,7 +10,7 @@ provisioning_dir = File.expand_path(File.join('..', config['provisioning_dir']),
 $logger = Logger.new(STDERR)
 
 unless ARGV.length >= 2
-    puts "Usage: ./control [env|all] [action]"
+    puts "Usage: ./control [frontend|workers|all] [deploy|restart-services|fetch-logs]"
     exit 1
 end
 
