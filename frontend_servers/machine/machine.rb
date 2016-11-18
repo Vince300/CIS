@@ -24,6 +24,7 @@ post '/result/:id' do |id|
 		filename = "/home/"+username+"/"+dirname+"temp.tar.gz"
 		FileUtils.cp(tempfile.path, filename)
 		FileUtils.chmod(0666, filename)
+		system("mail -s 'job "+id_split[2]+" done' "+username+"@localhost <<< 'The job number "+id_split[2]+" is done, result has been stored in "+filename+"'")
 		status 200
 	else
 
