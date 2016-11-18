@@ -13,8 +13,7 @@ post '/job/:id' do |id|
     end
 
     # Log the CN
-    puts headers['X-SSL-Client-S-DN']
-    puts headers['X-SSL-Client-Verify']
+    logger.debug(request.env['HTTP_X_SSL_CLIENT_S_DN'])
 
     # Job file
     job_file = params['job'][:tempfile]
