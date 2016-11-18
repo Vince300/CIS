@@ -1,0 +1,31 @@
+---
+us: cis2
+local_workers:
+    - https://ensipc375
+    - https://ensipc377
+distant_sites:
+    - https://ensipc351
+    - https://ensipc354
+    - https://ensipc386
+    - https://ensipc389
+worker_load_limit: 32
+max_file_size: 10485760
+max_daily_jobs: 500
+machine:
+    cert: /srv/machine.crt
+    key: /srv/machine.key
+    ca: /srv/machines.pem
+localhost:
+    cert: /srv/machine.crt
+    key: /srv/machine.key
+    ca: /srv/machines.pem
+site:
+    cert: /srv/cis2.crt
+    key: /srv/cis2.key
+others:
+    ca: /srv/cisothersca.pem
+sites_table:
+    cis1: https://ensipc351
+    cis3: https://ensipc354
+    cis4: https://ensipc386
+    cis5: https://ensipc389

@@ -3,112 +3,91 @@ require 'rest_client'
 require 'date'
 require 'fileutils'
 require 'yaml'
+require_relative '../helpers.yml'
 
-LOCAL_WORKERS = ["https://ensipc375", "https://ensipc377"]
+config = YAML.load_file(File.expand_path('../../config.yml', __FILE__))
+sites_table = config['sites_table']
+ip_table = config.map { |key, val| [val, key] }.to_h
 
-MAX_FILE_SIZE = 10485760
-
-MAX_DAILY_JOBS = 1000 
 daily_quota = {}
 last_date = nil
 
-ip_table = YAML.load_file(File.expand_path('../ip-table.yml', __FILE__))
-
-
-client_cert = OpenSSL::X509::Certificate.new(File.read("/srv/machine.crt"))
-client_key = OpenSSL::PKey::RSA.new(File.read("/srv/machine.key"))
-ca_machines_file = "/srv/machines.pem"
+client_cert = OpenSSL::X509::Certificate.new(File.read(config['machine']['cert']))
+client_key = OpenSSL::PKey::RSA.new(File.read(config['machine']['key']))
+ca_machines_file = config['machine']['ca']
 
 # Receive a job request
 post '/job/:id' do |id|
-	# Abort on missing input file
-	unless params.include? 'job' and params['job'].include? :tempfile 
-		halt 400
-	end
+    # Abort on invalid input file
+    job_file = check_file_param(params, 'job', config['max_file_size'])
 
-	job_file = params['job'][:tempfile]
+    # Check for username
+    username = params['user'] || params['username']
 
-	if job_file.size > MAX_FILE_SIZE
-		halt 413
-	end
+    unless username
+        halt 400
+    end
 
-	# Check for username
-	username = params['user'] || params['username']
+    # Find CN in ip_table
+    cn = (request.env['HTTP_X_SSL_CLIENT_S_DN'].split('/').map { |dn_part| dn_part.split('=') }.find { |dn_part| dn_part[0] == 'CN' })[1]
+    
+    # Deny requests for unknown
+    unless ip_table[cn]
+        halt 403
+    end
 
-	unless username
-		halt 400
-	end
+    id_to_send = "#{ip_table[cn]}:#{username}:#{id}"
+    
+    time = Time.new
+    if last_date != time.day
+        last_date = time.day
+        daily_quota = Hash.new()
+    end
+    if daily_quota[:cn] == nil
+        daily_quota[:cn] = 1
+    else
+        daily_quota[:cn] += 1
+    end
 
-	# Find CN in ip_table
-	cn = (request.env['HTTP_X_SSL_CLIENT_S_DN'].split('/').map { |dn_part| dn_part.split('=') }.find { |dn_part| dn_part[0] == 'CN' })[1]
-	
-	# Deny requests for unknown
-	unless ip_table[cn]
-		halt 403
-	end
+    if daily_quota[:cn] > config['max_daily_jobs']
+        halt 429, "Too many daily requests"
+    end
 
-	id_to_send = "#{ip_table[cn]}:#{username}:#{id}"
-	id_worker = rand LOCAL_WORKERS.length
-	
-	time = Time.new
-	if last_date != time.day
-		last_date = time.day
-		daily_quota = Hash.new()
-	end
-	if daily_quota[:cn] == nil
-		daily_quota[:cn] = 1
-	else
-		daily_quota[:cn] += 1
-	end
-
-	if daily_quota[:cn] > MAX_DAILY_JOBS
-		halt 429, "Too many daily requests"
-	end
-
-	worker_url = LOCAL_WORKERS[id_worker]
-	begin
-		RestClient::Resource.new(
-			worker_url + "/job/"+id_to_send,
-			:ssl_client_cert  =>  client_cert,
-			:ssl_client_key   =>  client_key,
-			:ssl_ca_file      =>  ca_machines_file,
-			:verify_ssl       =>  OpenSSL::SSL::VERIFY_PEER
-			).post(:job => job_file)
-	rescue RestClient::Exception => e
-		puts e
-		halt 503, e.response
-	rescue StandardError => e
-		halt 500
-	end
+    worker_url = config['local_workers'].sample
+    begin
+        RestClient::Resource.new(
+            worker_url + "/job/"+id_to_send,
+            :ssl_client_cert  =>  client_cert,
+            :ssl_client_key   =>  client_key,
+            :ssl_ca_file      =>  ca_machines_file,
+            :verify_ssl       =>  OpenSSL::SSL::VERIFY_PEER
+            ).post(:job => job_file)
+    rescue RestClient::Exception => e
+        puts e
+        halt 503, e.response
+    rescue StandardError => e
+        halt 500
+    end
 end
 
 # Receive response from distant entity
 post '/result/:id' do |id|
-	# Abort on missing input file
-	unless params.include? 'result' and params['result'].include? :tempfile 
-		status 400
-		break
-	end
+    # Abort on invalid input file
+    result_file = check_file_param(params, 'result', config['max_file_size'])
 
-	result_file = params['result'][:tempfile]
+    # Get username
+    username = params['user'] || params['username']
 
-	if result_file.size > MAX_FILE_SIZE
-		halt 413
-	end
+    unless username
+        halt 400
+    end
 
-	# Get username
-	username = params['user'] || params['username']
+    dirname = "job_" + DateTime.now.strftime("%e_%-m_%y__%k_%M_%S") 
+    filename = "/home/"+username+"/"+dirname+"temp.tar.gz"
+    FileUtils.cp(result_file.path, filename)
+    FileUtils.chmod(0666, filename)
 
-	unless username
-		halt 400
-	end
-
-	dirname = "job_" + DateTime.now.strftime("%e_%-m_%y__%k_%M_%S") 
-	filename = "/home/"+username+"/"+dirname+"temp.tar.gz"
-	FileUtils.cp(result_file.path, filename)
-	FileUtils.chmod(0666, filename)
-
-	cmd = "echo 'The job number #{id} is done, result has been stored in #{filename}' | mail -s 'job #{id} done' #{username}@localhost"
-	system(cmd)
-	status 200
+    cmd = "echo 'The job number #{id} is done, result has been stored in #{filename}' | mail -s 'job #{id} done' #{username}@localhost"
+    system(cmd)
+    status 200
 end
