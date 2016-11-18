@@ -5,11 +5,21 @@ require 'fileutils'
 
 LOCAL_WORKERS = ["https://ensipc375", "https://ensipc377"]
 
+LOCAL_WORKERS = ["https://ensipc375", "https://ensipc377"]
+
 MAX_FILE_SIZE = 10485760
 
 MAX_DAILY_JOBS = 500
 daily_quota = {}
 last_date = nil
+
+client_cert = OpenSSL::X509::Certificate.new(File.read("/srv/machine.crt"))
+client_key = OpenSSL::PKey::RSA.new(File.read("/srv/machine.key"))
+ca_machines_file = "/srv/machines.pem"
+
+site_cert = OpenSSL::X509::Certificate.new(File.read("/srv/cis2.crt"))
+site_key = OpenSSL::PKey::RSA.new(File.read("/srv/cis2.key"))
+ca_others_file = "/srv/cisothersca.pem"
 
 # Receive a job request
 post '/job/:id' do |id|
@@ -32,7 +42,7 @@ post '/job/:id' do |id|
 	id_worker = rand LOCAL_WORKERS.length
 	 
 	 
-	 worker_url = LOCAL_WORKERS[id_worker]
+	worker_url = LOCAL_WORKERS[id_worker]
 
 	username = "todelete"
 
@@ -55,9 +65,9 @@ post '/job/:id' do |id|
 	 begin
 		RestClient::Resource.new(
 			worker_url + "/job/"+id_to_send,
-			:ssl_client_cert  =>  OpenSSL::X509::Certificate.new(File.read("/srv/machine.crt")),
-			:ssl_client_key   =>  OpenSSL::PKey::RSA.new(File.read("/srv/machine.key"), ""),
-			:ssl_ca_file      =>  "/srv/machines.pem",
+			:ssl_client_cert  =>  client_cert,
+			:ssl_client_key   =>  client_key,
+			:ssl_ca_file      =>  ca_machines_file,
 			:verify_ssl       =>  OpenSSL::SSL::VERIFY_PEER
 		).post(:job => job_file)
 	 rescue RestClient::Exception => e
