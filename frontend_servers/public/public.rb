@@ -75,3 +75,29 @@ post '/job/:id' do |id|
 		body e.response
 	end
 end
+
+# Receive response from worker
+post '/result/:id' do |id|
+	# Abort on missing input file
+	unless params.include? 'result' and params['result'].include? :tempfile 
+		status 400
+		break
+	end
+
+	result_file = params['result'][:tempfile]
+
+	if result_file.size > MAX_FILE_SIZE
+		halt 413
+	end
+
+	# Get username
+	username = params['user'] || params['username']
+	dirname = "job_" + DateTime.now.strftime("%e_%-m_%y__%k_%M_%S") 
+	filename = "/home/"+username+"/"+dirname+"temp.tar.gz"
+	FileUtils.cp(result_file.path, filename)
+	FileUtils.chmod(0666, filename)
+
+	cmd = "echo 'The job number #{id} is done, result has been stored in #{filename}' | mail -s 'job #{id} done' #{username}@localhost"
+	system(cmd)
+	status 200
+end
