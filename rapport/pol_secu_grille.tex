@@ -2,4 +2,33 @@
 
 \chapter{Politique de sécurité de la grille}
 
-Blabla.
+\section{Contexte et objectifs}
+
+La grille de calcul permet de mettre à disposition des clients une puissance de calcul. Plusieurs sites participent à la grille avec des objectifs communs : partage pour une meilleure disponibilité, plus grande puissance de calcul. On souhaite protéger les sites dans l'intérêt de nos utilisateurs. \\
+
+\underline{Hypothèse (périmètre de sécurité)} : Confiance mutuelle entre les sites.
+
+\section{Besoins et Menaces}
+
+\newcolumntype{L}[1]{>{\raggedright}m{#1}}
+
+\begin{center}
+	\begin{tabular}{| l | p{5cm} | p{5cm} |}
+		\hline
+		\rowcolor{lightgray} {\bf Besoin} & {\bf Menaces} & {\bf Impacts} \\ \hline
+		Disponibilité locale & Surcharge provenant d'un autre site & Indisponibilité pour les utilisateurs locaux \\ \hline
+		Légitimité & Site pirate, utilisateur pirate & Indisponibilité pour les utilisateurs locaux \\ \hline
+		Intégrité & Modification des données & Résultats erronés \\ \hline
+		Validité & Exécution inexacte & Résultats erronés \\ \hline
+		Confidentialité & Écoute, espionnage industriel & Divulgation d'informations \\ \hline
+		Accessibilité & Inaccessibilité globale & Ressources indisponibles \\ \hline
+	\end{tabular}
+\end{center}
+
+\section{Organisation et mise en \oe{}uvre}
+
+\underline{Les sites} : Chaque site possède sa propre entité de certification. Pour chaque utilisateur, un site génère un certificat, utilisé pour l’authentification Single Sign On. Les sites garantissent l’intégrité, la confidentialité des jobs hors des serveurs physiques, ainsi que leur validité (bonne foi d'exécution). La politique d'exécution (acceptation et envoie envers les autre sites) concernant l’accessibilité est laissée libre. Un identifiant par utilisateur est à joindre aux requêtes pour pouvoir distinguer les clients distants. \\
+
+\underline{Les utilisateurs} : Les utilisateurs légitimes sont enregistrés sur un site et doivent s'authentifier. Un utilisateur légitime est une personne physique et morale reconnue par un site. \\
+
+\underline{Les jobs} : Après s’être authentifié auprès d’un site, l’utilisateur peut soumettre un job. Le job est exécuté sur un des sites. Les sites se font mutuellement confiance. Chaque site garantit la traçabilité des jobs envoyés.
