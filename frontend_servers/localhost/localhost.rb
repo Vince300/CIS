@@ -65,7 +65,8 @@ post '/job/:id' do |id|
 				:ssl_ca_file      =>  ca_machines_file,
 				:verify_ssl       =>  OpenSSL::SSL::VERIFY_PEER
 			).get.body.to_i < WORKER_LOAD_LIMIT
-		rescue
+		rescue StandardError => e
+			logger.error(e)
 			false
 		end
 	end
