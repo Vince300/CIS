@@ -1,8 +1,12 @@
 ---
 admin_key: ../keys/id_cis_admin
+provisioning_dir: ../provisioning
 frontend:
     services:
         - nginx
+    deploy:
+        - sudo ./07-frontend.sh
+        - rm -rf *
     hosts:
         - cisfe
     actions:
@@ -12,6 +16,9 @@ workers:
         - docker
         - cisd
         - nginx
+    deploy:
+        - sudo ./06-workerd.sh
+        - rm -rf *
     hosts:
         - cism1
         - cism2

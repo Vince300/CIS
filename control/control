@@ -6,6 +6,7 @@ require 'yaml'
 config_file = File.expand_path('../control.yml', __FILE__)
 config = YAML.load_file(config_file)
 $key_file = File.expand_path(File.join('..', config['admin_key']), config_file)
+provisioning_dir = File.expand_path(File.join('..', config['provisioning_dir']), config_file)
 $logger = Logger.new(STDERR)
 
 unless ARGV.length >= 2
@@ -15,6 +16,14 @@ end
 
 def ssh_do(host)
     cmd = "ssh -i #{$key_file} admin@#{host} 'sudo bash -s'"
+    $logger.debug(cmd)
+    Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
+        yield(stdin, stdout, stderr, wait_thr)
+    end
+end
+
+def sftp_do(host)
+    cmd = "sftp -i #{$key_file} admin@#{host}"
     $logger.debug(cmd)
     Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
         yield(stdin, stdout, stderr, wait_thr)
@@ -39,6 +48,22 @@ envs.each do |env|
                     stdin.puts("systemctl daemon-reload")
                     services.each do |service|
                         stdin.puts("systemctl restart #{service}")
+                    end
+                end
+            end
+        elsif action == 'deploy'
+            if deploy_commands = config[env]['deploy']
+                $logger.info("[#{env}] [#{host}] pushing deploy files")
+                Dir.chdir(provisioning_dir) do
+                    sftp_do(host) do |stdin, stdout, stderr, wait_thr|
+                        stdin.puts("put *")
+                    end
+                end
+
+                $logger.info("[#{env}] [#{host}] running deploy commands")
+                ssh_do(host) do |stdin, stdout, stderr, wait_thr|
+                    deploy_commands.each do |cmd|
+                        stdin.puts(cmd)
                     end
                 end
             end
