@@ -64,7 +64,7 @@ post '/job/:id' do |id|
 	end
 
 	target = nil
-	if externalize_host
+	unless externalize_host
 		target = LOCAL_WORKERS.shuffle.find do |worker_url|
 			begin
 				RestClient::Resource.new(
