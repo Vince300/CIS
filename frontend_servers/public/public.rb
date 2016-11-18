@@ -14,6 +14,11 @@ last_date = nil
 
 ip_table = YAML.load_file(File.expand_path('./ip-table.yml', __FILE__))
 
+
+client_cert = OpenSSL::X509::Certificate.new(File.read("/srv/machine.crt"))
+client_key = OpenSSL::PKey::RSA.new(File.read("/srv/machine.key"))
+ca_machines_file = "/srv/machines.pem"
+
 # Receive a job request
 post '/job/:id' do |id|
 
@@ -59,9 +64,9 @@ post '/job/:id' do |id|
 	begin
 		RestClient::Resource.new(
 			worker_url + "/job/"+id_to_send,
-			:ssl_client_cert  =>  OpenSSL::X509::Certificate.new(File.read("/srv/machine.crt")),
-			:ssl_client_key   =>  OpenSSL::PKey::RSA.new(File.read("/srv/machine.key"), ""),
-			:ssl_ca_file      =>  "/srv/machines.pem",
+			:ssl_client_cert  =>  client_cert,
+			:ssl_client_key   =>  client_key,
+			:ssl_ca_file      =>  ca_machines_file,
 			:verify_ssl       =>  OpenSSL::SSL::VERIFY_PEER
 			).post(:job => job_file)
 	rescue RestClient::Exception => e

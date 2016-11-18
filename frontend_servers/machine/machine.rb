@@ -6,6 +6,10 @@ require 'yaml'
 
 sites_table = YAML.load_file(File.expand_path('./sites-table.yml', __FILE__))
 
+site_cert = OpenSSL::X509::Certificate.new(File.read("/srv/cis2.crt"))
+site_key = OpenSSL::PKey::RSA.new(File.read("/srv/cis2.key"))
+ca_others_file = "/srv/cisothersca.pem"
+
 # Receive response from worker
 post '/result/:id' do |id|
 
@@ -27,9 +31,9 @@ post '/result/:id' do |id|
 		begin
 			RestClient::Resource.new(
 				site_url + "/result/"+id_split[2],
-				:ssl_client_cert  =>  OpenSSL::X509::Certificate.new(File.read("/srv/cis2.crt")),
-				:ssl_client_key   =>  OpenSSL::PKey::RSA.new(File.read("/srv/cis2.key"), ""),
-				:ssl_ca_file      =>  "/srv/cisothersca.pem",
+				:ssl_client_cert  =>  site_cert,
+				:ssl_client_key   =>  site_key,
+				:ssl_ca_file      =>  ca_others_file,
 				:verify_ssl       =>  OpenSSL::SSL::VERIFY_PEER
 				).post(:result => params['result'][:tempfile])
 		rescue RestClient::Exception => e
