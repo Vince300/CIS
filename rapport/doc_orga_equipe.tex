@@ -2,4 +2,35 @@
 
 \chapter{Documentation sur l'organisation des équipes et le déroulement du projet}
 
-Blablabla.
+\section{Déroulement du projet}
+
+Durant le projet, l'équipe a désigner un responsable avec de permettre la communication avec les autres groupes, notamment pour la politique de sécurité de la grille. Celle-ci a été définie dès le début, afin d'avoir une politique global idéntique pour toutes les équipes. Elle définit notamment les formats des jobs (tar) ainsi que la taille maximale de chaque archive. \\
+
+Par la suite, la politique de sécurité du site a été déterminée. Une fois définie, elle a été adoptée et elle ne peut être changée. \\
+
+L'étape suivante est de déterminer l'architecture du site tout en respectant les contraintes imposées par la politique de sécurité de la grille et du site. Une fois l'architecture définie, les outils permettant de la mettre en place ont été choisis. \\
+
+Les machines ont été installées et des scripts d'installation ont vu le jour. Dans un premier temps, les tests ont été effectués sur une machine de test, avec des certificats de test. L'équipe a produit le code du frontend et des workers afin qu'un job puisse être délégué et calculé. \\
+
+Après la phase de test, le code a été déployé sur les "vraies" machines et les clés ainsi que les certificats ont été regénérés et installés sur les machines. \\
+
+Enfin, le serveur public a été rajouté au frontend afin de permettre aux autres sites de pouvoir nous envoyer des jobs.
+
+\section{Organisation de l'équipe}
+
+La détermination de la politique de sécurité du site a été faite par toute l'équipe. \\
+
+L'équipe a été divisée en plusieurs groupes afin d'effectuer les tâches suivantes :
+
+\begin{itemize}
+\item[-] Création des certificats et des clés
+\item[-] Création des serveurs du frontend (local, machine et publique)
+\item[-] Écriture des scripts d'installation
+\item[-] Écriture des scripts de déploiement
+\item[-] Implémentation des workers
+\item[-] Installation des machines de tests
+\item[-] Configuration des machines de tests
+\item[-] Écriture du script de l'enregistrement d'un nouvel utilisateur
+\item[-] Écriture du script enoyant la requête d'exécution d'un job
+\item[-] Écriture du script de suppression d'un utilisateur (banissement)
+\end{itemize}
