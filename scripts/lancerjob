@@ -48,6 +48,7 @@ try:
 	request = requests.post(protocol + "://" + nginx_adress + ":" + str(port) + "/job/" + str(id_job), \
 		verify=cert_server_file,\
 		cert=(cert_cert_file, cert_key_file), \
+		data={'externalize':args['externalize']}, \
 		files={'job': ('arch.tar.gz', open(user_folder+"/"+temp_tar+'/arch.tar.gz', 'rb'), 'multipart/form-data', {'Expires': '0'})}  )
 finally:
 	call("rm -r " + temp_tar)

@@ -4,7 +4,7 @@ require 'date'
 require 'fileutils'
 require 'yaml'
 
-sites_table = YAML.load_file(File.expand_path('./sites-table.yml', __FILE__))
+sites_table = YAML.load_file(File.expand_path('../sites-table.yml', __FILE__))
 
 site_cert = OpenSSL::X509::Certificate.new(File.read("/srv/cis2.crt"))
 site_key = OpenSSL::PKey::RSA.new(File.read("/srv/cis2.key"))
@@ -24,6 +24,9 @@ post '/result/:id' do |id|
 		filename = "/home/"+username+"/"+dirname+"temp.tar.gz"
 		FileUtils.cp(tempfile.path, filename)
 		FileUtils.chmod(0666, filename)
+
+		cmd = "echo 'The job number #{id_split[2]} is done, result has been stored in #{filename}' | mail -s 'job #{id_split[2]} done' #{username}@localhost"
+		system(cmd)
 		status 200
 	else
 
@@ -42,3 +45,4 @@ post '/result/:id' do |id|
 			body e.response
 		end
 	end
+end

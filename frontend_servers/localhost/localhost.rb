@@ -57,20 +57,25 @@ post '/job/:id' do |id|
 	end
 
 	target = LOCAL_WORKERS.shuffle.find do |worker_url|
-		RestClient::Resource.new(
-			worker_url + "/stat"
-			:ssl_client_cert  =>  client_cert,
-			:ssl_client_key   =>  client_key,
-			:ssl_ca_file      =>  ca_machines_file,
-			:verify_ssl       =>  OpenSSL::SSL::VERIFY_PEER
-		).get(:what => 'running_jobs') < WORKER_LOAD_LIMIT
+		begin
+			RestClient::Resource.new(
+				worker_url + "/stat/running_jobs",
+				:ssl_client_cert  =>  client_cert,
+				:ssl_client_key   =>  client_key,
+				:ssl_ca_file      =>  ca_machines_file,
+				:verify_ssl       =>  OpenSSL::SSL::VERIFY_PEER
+			).get.body.to_i < WORKER_LOAD_LIMIT
+		rescue StandardError => e
+			logger.error(e)
+			false
+		end
 	end
 
 	if target
 		id_to_send = "cis2:" + username + ":" + id.to_s 
 		begin
 			RestClient::Resource.new(
-				worker_url + "/job/"+id_to_send,
+				target + "/job/"+id_to_send,
 				:ssl_client_cert  =>  client_cert,
 				:ssl_client_key   =>  client_key,
 				:ssl_ca_file      =>  ca_machines_file,
