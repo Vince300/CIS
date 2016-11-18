@@ -59,7 +59,7 @@ post '/job/:id' do |id|
 	externalize_host = params['externalize']
 	externalize_host = nil if not externalize_host.nil? and externalize_host.empty?
 
-	unless DISTANT_WORKERS.include? externalize_host
+	if externalize_host and not DISTANT_WORKERS.include? externalize_host
 		halt 403, "Hôte externe non autorisé"
 	end
 
