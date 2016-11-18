@@ -56,18 +56,28 @@ post '/job/:id' do |id|
 		halt 429, "Trop de requêtes journalières"
 	end
 
-	target = LOCAL_WORKERS.shuffle.find do |worker_url|
-		begin
-			RestClient::Resource.new(
-				worker_url + "/stat/running_jobs",
-				:ssl_client_cert  =>  client_cert,
-				:ssl_client_key   =>  client_key,
-				:ssl_ca_file      =>  ca_machines_file,
-				:verify_ssl       =>  OpenSSL::SSL::VERIFY_PEER
-			).get.body.to_i < WORKER_LOAD_LIMIT
-		rescue StandardError => e
-			logger.error(e)
-			false
+	externalize_host = params['externalize']
+	externalize_host = nil if not externalize_host.nil? and externalize_host.empty?
+
+	unless DISTANT_WORKERS.include? externalize_host
+		halt 403, "Hôte externe non autorisé"
+	end
+
+	target = nil
+	if externalize_host
+		target = LOCAL_WORKERS.shuffle.find do |worker_url|
+			begin
+				RestClient::Resource.new(
+					worker_url + "/stat/running_jobs",
+					:ssl_client_cert  =>  client_cert,
+					:ssl_client_key   =>  client_key,
+					:ssl_ca_file      =>  ca_machines_file,
+					:verify_ssl       =>  OpenSSL::SSL::VERIFY_PEER
+				).get.body.to_i < WORKER_LOAD_LIMIT
+			rescue StandardError => e
+				logger.error(e)
+				false
+			end
 		end
 	end
 
@@ -87,7 +97,8 @@ post '/job/:id' do |id|
 			body e.response
 		end
 	else 
-		site_url = DISTANT_WORKERS.sample
+		site_url = externalize_host || DISTANT_WORKERS.sample
+
 		begin
 			RestClient::Resource.new(
 				site_url + "/job/"+id,
