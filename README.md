@@ -1,5 +1,9 @@
 # Projet CIS - Equipe 2
 
+_Projet de Construction d'Infrastructure Sécurisées à l'Ensimag. Les clés et
+mots de passe présents dans le dépôt n'ont été utilisées que pour ce projet, et
+maintenues secrètes le temps du projet. Ceci est juste un dépôt d'archive._
+
 ## Mise en place du front-end
 
 installation de debian avec serveur ssh et utilitaires classique
